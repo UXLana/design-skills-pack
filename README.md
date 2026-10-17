@@ -158,5 +158,5 @@ Repeat for each skill you want. Anthropic's current steps are in
 
 ## About
 
-Made by Lana Holston, a UX design leader working on design systems, accessibility and AI-assisted design
+Made by Lana Holston, a product design leader working on design systems, accessibility and AI-assisted design
 workflows. More at [lanaholston.com](https://lanaholston.com).
