@@ -1,6 +1,6 @@
 # Design Skills Pack
 
-21 skills for Claude Code and Codex, written for product designers and design leaders. They cover the
+20 skills for Claude Code and Codex, written for product designers and design leaders. They cover the
 whole job: framing the problem, building on a design system, prototyping and QA, accessibility, handing
 off to engineering, and showing what the work changed.
 
@@ -20,8 +20,7 @@ and any brand.
 | **1. Frame & decide** | `design-brief-generator` | Runs guided discovery one section at a time, or turns kickoff notes, Slack threads and intake-form answers into a design brief: problem, users, hypothesis, scope, accessibility target and success metrics. |
 | | `design-lead-thought-partner` | A candid thinking partner for brainstorming, stress-testing ideas and working through tradeoffs, with decision frameworks (Cynefin, RICE, RAPID, MoSCoW) when you want structure. |
 | | `requirements-to-decision-doc` | Turns raw requirements, sync notes or PRD fragments into a status-tagged HTML decision doc that engineering and stakeholders can review. |
-| **2. Design with a system** | `design-system-perspectives` | Before risky design-system work, argues the positive, negative and neutral case and waits for your call. |
-| | `brand-tokens-translator` | Reads brand guidelines (PDF, text or screenshots) and produces primitive and semantic design tokens as a review table and a DTCG `tokens.json` that Figma can import and CSS can use. |
+| **2. Design with a system** | `brand-tokens-translator` | Reads brand guidelines (PDF, text or screenshots) and produces primitive and semantic design tokens as a review table and a DTCG `tokens.json` that Figma can import and CSS can use. |
 | | `theme-generator` | Builds a full product theme from one brand color, and audits existing themes for token coverage and contrast. |
 | | `token-audit` | Finds hard-coded colors, spacing, type, radii and shadows in code and maps each one to a token, or flags it for a new one. |
 | | `component-generator` | Creates production-ready React and TypeScript components on top of your existing primitives, following atomic design. |

@@ -296,7 +296,7 @@ For each unknown, classify stakes:
 - **high** — guessing wrong produces a misleading metaphor, accessibility failure, or a name that collides with an existing icon. Examples: "is this 'archive' or 'storage' semantically?", "should the filled variant be auto-generated or do you want a hand-tuned version?", "does this icon already exist under a different name?"
 - **low** — minor stroke-width variations, exact pixel snapping. Decide, log, move on.
 
-If any unknown is `high`, **stop** and ask the user in chat before producing SVG. If the repo has a `_design_task.md` at its root (a shared task log that other design-system skills, such as design-system-perspectives, read and write), also record the question there under `honesty.pending_questions`; if it has none, asking in chat is enough, so don't create the file:
+If any unknown is `high`, **stop** and ask the user in chat before producing SVG. If the repo has a `_design_task.md` at its root (a shared task log that some design-system workflows keep), also record the question there under `honesty.pending_questions`; if it has none, asking in chat is enough, so don't create the file:
 
 ```yaml
 honesty:

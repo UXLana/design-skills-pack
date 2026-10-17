@@ -189,4 +189,4 @@ At the end of a meaningful audit (any non-zero violations, or a clean sweep on a
 }
 ```
 
-Skip if zero violations and no prior history on this scope. Future runs of token-audit (and related skills such as design-system-perspectives) can recall this when working on the same area.
+Skip if zero violations and no prior history on this scope. Future runs of token-audit can recall this when working on the same area.

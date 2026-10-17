@@ -259,7 +259,7 @@ For each unknown, classify stakes:
 - **high** — a wrong guess would ship a public API that is costly to reverse and that the repo can't settle. Examples: the requested prop name or meaning conflicts with an existing component's API; the design calls for a token that doesn't exist in the token file; it's unclear whether the request extends an existing component or adds a new one.
 - **low** — anything the repo already answers by convention (follow the neighboring components), plus internal variable naming, comment style, and ordering of optional props. Decide, note the assumption in your summary, move on.
 
-If any unknown is `high`, stop and ask the user before writing `.tsx`, because a wrong component gets imported and copied before anyone notices. Ask in chat. If the repo has a `_design_task.md` at its root (a shared task log that other design-system skills, such as design-system-perspectives, read and write), also record the question there under `honesty.pending_questions`:
+If any unknown is `high`, stop and ask the user before writing `.tsx`, because a wrong component gets imported and copied before anyone notices. Ask in chat. If the repo has a `_design_task.md` at its root (a shared task log that some design-system workflows keep), also record the question there under `honesty.pending_questions`:
 
 ```yaml
 honesty:
