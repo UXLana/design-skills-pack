@@ -1,6 +1,6 @@
 # Design Skills Pack
 
-20 skills for Claude Code and Codex, written for product designers and design leaders. They cover the
+Skills for Claude Code and Codex, written for product designers and design leaders. They cover the
 whole job: framing the problem, building on a design system, prototyping and QA, accessibility, handing
 off to engineering, and showing what the work changed.
 
