@@ -49,7 +49,7 @@ Extract only weights present in the brand guidelines.
 | `font.size.6xl` | 60px | Display |
 | `font.size.7xl` | 72px | Large display |
 
-Use brand-specified sizes where available. Defaults above are fallbacks (Suggest level — label as `❓ Needs design decision` unless brand specifies values).
+Use brand-specified sizes where available. Defaults above are fallbacks at Needs-design-decision level: label them `❓ Needs design decision` unless the brand specifies values.
 
 ### Line Height
 
@@ -57,7 +57,7 @@ Use brand-specified sizes where available. Defaults above are fallbacks (Suggest
 |-------|-------|-----|
 | `line-height.tight` | 1.2 | Headlines, display |
 | `line-height.snug` | 1.3 | Subheadings |
-| `line-height.normal` | 1.5 | Body (WCAG minimum) |
+| `line-height.normal` | 1.5 | Body (readability recommendation) |
 | `line-height.relaxed` | 1.75 | Long-form reading |
 
 ### Letter Spacing
@@ -67,6 +67,8 @@ Use brand-specified sizes where available. Defaults above are fallbacks (Suggest
 | `letter-spacing.tight` | -0.025em | Large headlines |
 | `letter-spacing.normal` | 0 | Body text |
 | `letter-spacing.wide` | 0.025em | All caps, labels |
+
+Em values are fine in tables and CSS. In the `.tokens.json`, DTCG dimensions allow only px and rem, so convert em to px at the style's font size (see SKILL.md).
 
 ## Composite Patterns
 
@@ -122,18 +124,28 @@ Pattern: `font.display.{size}` — sizes map to `font.size.*` scale.
 | No letter-spacing specified | Default 0 (normal), label `⚑ Estimated` |
 | Weight not in guidelines | Do not create the token |
 
-## Accessibility
+## Accessibility and Readability
 
-- Body text minimum: 16px (WCAG recommended)
-- Use 12px sparingly (meta/captions only)
-- WCAG 1.4.12 text spacing: line-height ≥ 1.5x, paragraph spacing ≥ 2x, letter spacing ≥ 0.12em, word spacing ≥ 0.16em
-- Optimal line length: 50–75 characters
+Keep WCAG requirements and readability recommendations apart, so a brand value is never reported as a WCAG failure when it isn't one.
 
-### Noncompliant Source Values
+### WCAG requirements that touch type tokens
 
-When brand guidelines specify values that violate accessibility recommendations (e.g., body text below 16px, line-height below 1.5 for body, all-caps with tight spacing):
+- **SC 1.4.3 Contrast (Minimum), AA:** 4.5:1 for text, 3:1 for large text (at least 18pt / 24px, or 14pt / about 18.66px bold). Checked on color pairs; see `color-architecture.md`.
+- **SC 1.4.4 Resize Text, AA:** text must resize to 200% without loss of content or function. WCAG sets no minimum font size; rem-based sizes make resizing easier.
+- **SC 1.4.12 Text Spacing, AA:** nothing may break when a user overrides line height to 1.5× the font size, paragraph spacing to 2×, letter spacing to 0.12em and word spacing to 0.16em. It doesn't require you to ship those values as defaults; it is a test the components must pass.
+
+### Readability recommendations (not WCAG requirements)
+
+- Body text around 16px; use 12px sparingly (meta/captions only)
+- Body line height around 1.5. Only SC 1.4.8 Visual Presentation (AAA) asks for space-and-a-half line spacing
+- Line length around 50–75 characters. SC 1.4.8 (AAA) caps width at 80 characters
+- Avoid tight letter spacing on all-caps text
+
+### Values Below a Recommendation
+
+When brand guidelines specify values below a readability recommendation (e.g., body text below 16px, body line height below 1.5, all caps with tight spacing):
 1. **Extract faithfully** — tokenize the value as specified, labeled `Extract`
-2. **Flag the risk** — add a gap block noting the WCAG concern
-3. **Suggest a compliant alternative** — offer an adjusted value as `❓ Needs design decision`
+2. **Flag the risk** — add a gap block that names it as a readability recommendation, not a WCAG failure. Contrast failures are WCAG failures; see `color-architecture.md`
+3. **Suggest an alternative** — offer an adjusted value as `❓ Needs design decision`
 
-Do not silently normalize noncompliant values. The brand owner decides whether to accept the risk or adopt the alternative.
+Don't silently normalize these values. The brand owner decides whether to accept the risk or adopt the alternative.

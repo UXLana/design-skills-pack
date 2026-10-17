@@ -8,7 +8,14 @@ Patterns for translating brand colors into a layered token system. Consult along
 Atomic (raw values)          →  color.green.forest → #XXXXXX
 Composite (semantic aliases) →  color.primary.default → {color.green.forest}
 Composite + State            →  color.primary.hover → derived from palette
+Composite per mode           →  color.surface.default → light: {color.neutral.white} · dark: {color.green.forest}
 ```
+
+## Modes
+
+Light/dark and sub-brands are **modes**: the same composite name carries one value per mode, and each mode becomes its own `.tokens.json` file (see SKILL.md). For light/dark, atomics stay the same and only the composites' aliases change; sub-brand modes may also swap the atomics. Keep the theme out of the name, so components never need rewiring when the theme switches.
+
+Use `on-light` / `on-dark` only for a section whose background is the same in every mode, such as an always-dark brand band (see Fixed sections below).
 
 ## Atomic Extraction
 
@@ -49,26 +56,30 @@ color.primary.disabled  → {color.green.sage-mid}
 ### Surface
 
 ```
-color.surface.light.default   → {color.neutral.white}
-color.surface.light.subtle    → lighter brand tint
-color.surface.light.emphasis  → brand tint
-color.surface.dark.default    → {color.green.forest}
-color.surface.dark.subtle     → mid brand shade
-color.surface.dark.emphasis   → brand secondary
+                         light mode               dark mode
+color.surface.default  → {color.neutral.white}    {color.green.forest}
+color.surface.subtle   → lighter brand tint       mid brand shade
+color.surface.emphasis → brand tint               brand secondary
 ```
 
 ### Text
 
 ```
-color.text.on-light.high      → {color.green.forest}
-color.text.on-light.mid       → mid shade
-color.text.on-light.low       → lighter shade
-color.text.on-light.disabled  → opacity-modified
+                         light mode               dark mode
+color.text.high        → {color.green.forest}     {color.neutral.white}
+color.text.mid         → mid shade                light shade
+color.text.low         → lighter shade            mid shade
+color.text.disabled    → opacity-modified         opacity-modified
+```
 
-color.text.on-dark.high       → {color.neutral.white}
-color.text.on-dark.mid        → light shade
-color.text.on-dark.low        → mid shade
-color.text.on-dark.disabled   → opacity-modified
+### Fixed sections (only when needed)
+
+For a band whose background doesn't change with the mode, name the pairing explicitly. Its values are the same in every mode file.
+
+```
+color.surface.fixed-dark  → {color.green.forest}
+color.text.on-dark.high   → {color.neutral.white}
+color.text.on-dark.mid    → light shade
 ```
 
 ### Border
@@ -115,23 +126,27 @@ Always flag derived states. Never present as Extract-level.
 
 | Usage | Ratio | WCAG |
 |-------|-------|------|
-| Body text | 4.5:1 | AA |
-| Large text (18px+ / 14px bold) | 3:1 | AA |
-| UI components & borders | 3:1 | AA |
-| Enhanced body text | 7:1 | AAA |
+| Body text | 4.5:1 | AA (SC 1.4.3) |
+| Large text (at least 18pt / 24px, or 14pt / about 18.66px bold) | 3:1 | AA (SC 1.4.3) |
+| UI components, graphical objects & focus indicators | 3:1 | AA (SC 1.4.11) |
+| Enhanced body text | 7:1 | AAA (SC 1.4.6) |
+| Enhanced large text | 4.5:1 | AAA (SC 1.4.6) |
+
+Don't round the computed ratio: 4.499:1 doesn't meet 4.5:1 (W3C Understanding SC 1.4.3).
 
 ### Required Checks
 
-Verify these pairs and flag failures:
+Verify these pairs in **every mode** and flag failures:
 
-- `color.text.on-light.high` / `color.surface.light.default`
-- `color.text.on-dark.high` / `color.surface.dark.default`
-- `color.primary.default` / `color.surface.light.default`
-- `color.border.focus` / any background
+- `color.text.high` / `color.surface.default`
+- `color.text.mid` and `color.text.low` / `color.surface.default`, if they carry readable text
+- `color.primary.default` / `color.surface.default`
+- `color.text.on-dark.high` / `color.surface.fixed-dark`, if fixed sections exist
+- `color.border.focus` / every surface it appears on
 
 When brand colors fail contrast, flag:
 
 ```
-❓ Needs design decision — {pair} fails WCAG AA ({actual ratio})
+❓ Needs design decision — {pair} fails WCAG AA in {mode} mode ({actual ratio})
    Options: Darken text to {value} ({passing ratio}) | Use alternative swatch
 ```

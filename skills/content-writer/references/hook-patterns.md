@@ -1,165 +1,84 @@
 # Hook Patterns Library
 
-A reference of high-performing hook patterns for LinkedIn and blog content targeting UX/product leadership.
+The four hook types this skill uses for LinkedIn posts and blog openings. Read this when writing the hooks for Mode 1, Step 3. The hook types to avoid, and why, are listed in SKILL.md under "LinkedIn Hook Patterns".
 
-## Table of Contents
-1. [Contrarian / Hot Take](#contrarian--hot-take)
-2. [Personal Story / Vulnerability](#personal-story--vulnerability)
-3. [Specific Number / Result](#specific-number--result)
-4. [Pattern Interrupt / Shock](#pattern-interrupt--shock)
-5. [Framework / List Preview](#framework--list-preview)
-6. [Question / Invitation](#question--invitation)
-7. [Observation / Trend](#observation--trend)
-8. [Confession / Mistake](#confession--mistake)
+1. [Reframe](#reframe)
+2. [Observation](#observation)
+3. [Quiet contrarian](#quiet-contrarian)
+4. [Specific claim](#specific-claim)
 
----
+## Two rules for every hook
 
-## Contrarian / Hot Take
+**Numbers come only from the user's real data.** A figure in a hook has to come from the brief, the conversation, or the user's saved examples and playbook. If a hook would be stronger with a number you don't have, write the slot (`[rounds before]`, `[teams]`) and ask for it. A made-up statistic published under someone's name costs more credibility than the hook can earn back. Bracketed slots in the examples below are there for that reason.
 
-Challenge something your audience believes. The power comes from targeting a widely-held assumption and offering a credible alternative.
+**Land before the fold.** The feed cuts the post at "see more" after a short first stretch (see "Platform facts" in SKILL.md). The hook should make its point inside that stretch, so write it as one or two short sentences, not a windup.
 
-**Pattern:** "[Thing everyone agrees on] is wrong/overrated/misunderstood. Here's why."
-
-**Examples:**
-- "Design systems don't fail because of bad components. They fail because nobody asked why."
-- "User research shouldn't inform your product decisions. It should challenge them."
-- "The best UX leaders I know don't actually care about UX."
-- "Stop asking users what they want. Start watching what they do."
-- "Your design team doesn't need more headcount. It needs fewer meetings."
-
-**Why it works:** Creates cognitive tension. The reader has to click "see more" to resolve the dissonance. Drives comments because people either agree passionately or want to argue.
-
-**Risk:** If the contrarian position is too extreme or not well-supported, it reads as ragebait. Always have a credible "here's what I mean" follow-up.
+The hook reads like the first line of an essay, not a headline: calm, specific, and complete enough to stand on its own.
 
 ---
 
-## Personal Story / Vulnerability
+## Reframe
 
-Open with a specific moment from your experience. The more concrete and honest, the better.
+Take something the audience already thinks about and move the problem to a different place.
 
-**Pattern:** "I [did something / experienced something]. Here's what I learned."
+**Pattern:** "The [obvious culprit] is not the problem. [The less obvious thing] is."
 
 **Examples:**
-- "I spent 3 years building the wrong thing. Here's what I missed."
-- "Last Tuesday, I watched our entire design team go silent in a meeting. That silence told me everything."
-- "I got promoted to Head of Design and immediately wanted to quit."
-- "My first design system had 47 button variants. Forty-seven."
-- "I deleted six months of research last week. Best decision I've made all year."
+- "The biggest bottleneck in working with LLMs is not the model. It's the interface."
+- "Design systems rarely fail because of their components. They fail at the handoff between teams."
+- "Most accessibility debt is not a skills gap. It is a definition-of-done gap."
 
-**Why it works:** Vulnerability disarms. In a feed full of polished takes, a real human moment stops the scroll. People engage because they relate or are curious how the story resolves.
+**Why it fits this voice:** It creates tension without shouting. The reader keeps going to see whether the new framing holds, and the rest of the post exists to show that it does.
 
-**Risk:** Don't manufacture vulnerability. If it didn't happen, don't write it.
+**How it goes wrong:** A reframe that doesn't survive the next paragraph reads as a trick. Only use it when the post has a concrete example that proves the new framing.
 
 ---
 
-## Specific Number / Result
+## Observation
 
-Lead with a concrete, specific metric or outcome. Specificity signals credibility.
+Name a shift the writer has noticed, stated as something seen, not something predicted.
 
-**Pattern:** "[Specific metric or result] from [specific action or change]."
+**Pattern:** "Something is changing in how [group] [does thing]."
 
 **Examples:**
-- "We reduced design review cycles by 73% with one process change."
-- "347 components. 12 designers. 0 documentation. Here's how we fixed it."
-- "Our NPS went from 23 to 71 in 4 months. The change had nothing to do with the product."
-- "I interviewed 89 UX leaders. They all said the same thing about hiring."
-- "One accessibility fix increased our conversion rate by 41%."
+- "Something is shifting in how companies think about design leadership."
+- "The design reviews that work best lately have stopped looking like reviews."
+- "Engineers on product teams are starting to ask for the design system before the designer does."
 
-**Why it works:** Numbers are concrete in a sea of abstract advice. They promise a specific, replicable result. People save these posts.
+**Why it fits this voice:** It positions the writer as someone noticing patterns, which is the analytical-observer stance, and it invites the reader to check the pattern against their own experience.
 
-**Risk:** Don't inflate numbers. Round numbers ("increased by 50%") feel less credible than precise ones ("increased by 47%").
+**How it goes wrong:** An observation built on one conversation is a generalization. Ground it in what the user has actually seen, and say how much they've seen if they can put a real number on it ("in [number] hiring loops this quarter").
 
 ---
 
-## Pattern Interrupt / Shock
+## Quiet contrarian
 
-Say something unexpected in the first line that makes the reader stop and wonder what's coming.
+Disagree with a common assumption calmly, as a statement of how things look from where the writer stands.
 
-**Pattern:** "[Surprising or provocative statement that demands context.]"
+**Pattern:** "We are still [doing the accepted thing], even though [what that ignores]."
 
 **Examples:**
-- "I fired our best designer last month."
-- "We shipped a product with known usability issues. On purpose."
-- "I told my CEO that our design team is overstaffed."
-- "The most important design tool isn't Figma."
-- "I stopped doing user research for 6 months."
+- "We are still trying to communicate high-resolution ideas through a text box."
+- "We keep measuring design teams by output, even though the hard part is deciding what not to build."
+- "A component library is not a design system, and treating it as one is why adoption stalls."
 
-**Why it works:** Creates an information gap. The reader can't not click "see more" — they need to understand the context. Very high engagement when done well.
+**Why it fits this voice:** It carries the energy of a hot take without the volume. No "stop", no "wrong", no all-caps; the claim does the work.
 
-**Risk:** The payoff has to be worth the setup. If the "see more" content is mundane, people feel baited.
+**How it goes wrong:** If it tips into a command ("Stop doing X") or a dunk on the reader, it becomes the prescriptive voice SKILL.md avoids. Keep it observational.
 
 ---
 
-## Framework / List Preview
+## Specific claim
 
-Tease a mental model, framework, or numbered list that promises structured insight.
+Lead with a concrete result and the change that produced it. Specificity is the credibility.
 
-**Pattern:** "[Number] [things/rules/principles] I've learned about [topic]."
+**Pattern:** "[Concrete result from the user's data] after [one specific change]."
 
-**Examples:**
-- "After 15 years in UX, I've narrowed design leadership down to 3 rules."
-- "The 4 conversations every new design director needs to have in their first 30 days."
-- "There are only 2 types of design systems. Here's why most teams build the wrong one."
-- "A simple framework for deciding when to push back on stakeholder feedback."
-- "5 things I wish someone told me before I became a UX manager."
+**Examples (slots to fill with the user's real figures):**
+- "We cut design review from [rounds before] rounds to [rounds after] with one process change."
+- "[Number] components, [number] product teams, and no shared definition of done. Here is what changed when we wrote one."
+- "Our support tickets about the settings page dropped by [percent] after we removed a single option."
 
-**Why it works:** Frameworks get saved and bookmarked more than any other content type. People want structured, reusable knowledge.
+**Why it fits this voice:** A precise number from real work is an observation with evidence attached. It promises a concrete story, and the post's example section delivers it.
 
-**Risk:** The framework needs to be genuinely useful, not a dressed-up platitude.
-
----
-
-## Question / Invitation
-
-Open with a question that the audience genuinely wants to answer.
-
-**Pattern:** "[Thought-provoking question about the audience's experience]?"
-
-**Examples:**
-- "What's the most expensive design decision you've ever made?"
-- "When was the last time a user surprised you?"
-- "If you had to cut your design system down to 10 components, which would you keep?"
-- "What's the one thing you wish your PM understood about design?"
-- "What's the hardest conversation you've had with a stakeholder?"
-
-**Why it works:** Questions create immediate engagement. People love sharing their experience, especially when the question is interesting enough to think about.
-
-**Risk:** The question needs to be genuinely interesting, not rhetorical or obvious.
-
----
-
-## Observation / Trend
-
-Name something you're seeing happen in the industry. Position yourself as someone who notices patterns others miss.
-
-**Pattern:** "I'm noticing [trend/pattern]. Here's what it means."
-
-**Examples:**
-- "Something is shifting in how companies think about design leadership. I've seen it in 5 conversations this month."
-- "Every design team I've talked to in 2024 is struggling with the same thing."
-- "There's a quiet exodus happening in UX. Nobody's talking about it."
-- "The companies winning right now all have one thing in common: they stopped treating design as a service."
-- "I've noticed the best product teams don't have a 'design review' meeting."
-
-**Why it works:** Positions you as someone with a macro view. People want to know if they're part of the trend.
-
-**Risk:** Make sure you're actually observing a pattern, not generalizing from one data point.
-
----
-
-## Confession / Mistake
-
-Admit something you got wrong. The more specific and consequential, the better.
-
-**Pattern:** "I was wrong about [something]. Here's what changed my mind."
-
-**Examples:**
-- "For years, I thought accessibility was a nice-to-have. I was dead wrong."
-- "I used to think design systems were about consistency. I missed the point entirely."
-- "I gave my team terrible advice for 2 years. Here's what it was."
-- "I was the problem on my last team. Took me a year to see it."
-- "I argued against user research on our last project. Here's what happened."
-
-**Why it works:** Admitting mistakes is rare on LinkedIn. It signals maturity and self-awareness. The audience leans in because they want to learn from your mistake before making it themselves.
-
-**Risk:** The lesson has to be genuine. Don't manufacture regret for engagement.
+**How it goes wrong:** Without the user's real figure, this hook doesn't exist. Use one of the other three types instead, or ask for the number. Never round a real number up to make it sound better, and never fill a slot with a plausible guess.

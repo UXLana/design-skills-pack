@@ -1,6 +1,6 @@
 ---
 name: spec-pack
-description: Create a lightweight spec contract before non-trivial AI-assisted coding. Use when the user asks for a dev spec, spec pack, implementation plan before coding, acceptance criteria, or when a coding task affects behavior, UI, data, design-system primitives, automations, integrations, accessibility, privacy, or regulated workflows. Also Reverse mode: reverse-engineer a reproduction-grade spec from an existing feature or prototype — triggers on 'spec what we built', 'spec the end-result', 'reverse spec', 'spec for regenerating X', 'document this as a contract'.
+description: 'Create a lightweight spec contract before non-trivial AI-assisted coding. Use when the user asks for a dev spec, spec pack, implementation plan before coding, acceptance criteria, or when a coding task affects behavior, UI, data, design-system primitives, automations, integrations, accessibility, privacy, or regulated workflows. Also Reverse mode: reverse-engineer a reproduction-grade spec from an existing feature or prototype — triggers on ''spec what we built'', ''spec the end-result'', ''reverse spec'', ''spec for regenerating X'', ''document this as a contract''.'
 ---
 
 # spec-pack

@@ -4,7 +4,7 @@ Comprehensive testing procedures for validating accessibility compliance.
 
 ## Automated Testing
 
-Run automated tools first to catch low-hanging fruit (~30% of issues).
+Run automated tools first to catch low-hanging fruit. They find only a minority of issues (estimates vary by study), so never treat a clean automated run as conformance.
 
 ### Recommended Tools
 
@@ -47,7 +47,7 @@ describe('Button', () => {
 
 ## Manual Testing
 
-Manual testing catches ~70% of issues that automated tools miss.
+Manual testing finds what automated tools can't judge — focus order, meaningful names, announcements, and whether a task can actually be completed.
 
 ### Keyboard Testing
 
@@ -69,7 +69,7 @@ Manual testing catches ~70% of issues that automated tools miss.
 | 200% zoom | No loss of content/function | ☐ |
 | 400% zoom | No horizontal scroll (320px) | ☐ |
 | Text spacing override | Content still readable | ☐ |
-| High contrast mode | All content visible | ☐ |
+| Forced colors / high contrast mode | All content, borders and focus indicators visible | ☐ |
 | Dark mode | Adequate contrast maintained | ☐ |
 | Color alone | Info not conveyed by color only | ☐ |
 
@@ -138,28 +138,28 @@ Key commands:
 - [ ] Has accessible name (text or aria-label)
 - [ ] Uses `<button>` element (not div)
 - [ ] Type attribute set (button, submit, reset)
-- [ ] Disabled state uses aria-disabled
-- [ ] Focus indicator visible (3:1 contrast)
-- [ ] Touch target ≥24×24px
+- [ ] Disabled state follows the `disabled` vs `aria-disabled` decision tree (SKILL.md)
+- [ ] Focus indicator visible (3:1 against the surface), also in forced colors
+- [ ] Target ≥24×24px, or a 2.5.8 exception applies
 
 ### Form Input
 - [ ] Associated label (htmlFor/id or wrapping)
 - [ ] Help text linked via aria-describedby
 - [ ] Error text linked via aria-describedby
-- [ ] Required state indicated (visual + aria-required)
+- [ ] Required state indicated (visual + native `required`; `aria-required` only on custom widgets)
 - [ ] Invalid state indicated (visual + aria-invalid)
 - [ ] Autocomplete attribute for user data
 - [ ] Focus indicator visible
 
 ### Modal/Dialog
-- [ ] role="dialog" and aria-modal="true"
+- [ ] Native `<dialog>` opened with `showModal()` (or a custom overlay with role="dialog", aria-modal="true" and `inert` on the background)
 - [ ] aria-labelledby points to title
 - [ ] aria-describedby for description
 - [ ] Focus moves into modal on open
-- [ ] Focus trapped within modal
+- [ ] Background content is inert — can't be reached by Tab or by AT
 - [ ] Escape key closes modal
 - [ ] Focus returns to trigger on close
-- [ ] Background content hidden from AT
+- [ ] Visible close or cancel button
 
 ### Table
 - [ ] Uses `<table>` element (not divs)
@@ -190,21 +190,25 @@ Key commands:
 
 | Content | Ratio | Example |
 |---------|-------|---------|
-| Normal text | 4.5:1 | Black (#000) on white (#FFF) = 21:1 ✓ |
-| Large text | 3:1 | Gray (#767676) on white = 4.48:1 |
-| UI components | 3:1 | Border, icons, focus ring |
+| Normal text | 4.5:1 | Gray #767676 on white = 4.54:1 ✓ (the lightest neutral gray that passes; #777777 = 4.47:1 ✗) |
+| Large text (≥24px, or ≥18.66px bold) | 3:1 | Gray #949494 on white = 3.03:1 ✓ for large text only |
+| UI components | 3:1 | Border, icons, focus ring — against the adjacent color |
 
-### High Contrast Mode Testing
+Compare unrounded ratios: 4.499:1 fails 4.5:1.
+
+### Forced Colors (High Contrast) Testing
+
+Turn forced colors on (Windows: Settings → Accessibility → Contrast themes; Chrome DevTools: Rendering → Emulate CSS media feature `forced-colors: active`) and check that every control boundary, icon, selected state and focus indicator is still visible. `box-shadow` is removed in this mode, so ring-only focus styles and shadow-only borders disappear.
 
 ```css
-/* Test that components don't rely solely on color */
+/* ✓ Give shadow-based indicators an outline or border fallback */
 @media (forced-colors: active) {
-  /* Ensure content is visible in high contrast mode */
-  .custom-checkbox {
-    forced-color-adjust: none;
-    /* Or adjust for high contrast */
-  }
+  .custom-checkbox { border: 1px solid CanvasText; }
+  .btn:focus-visible { outline: 2px solid Highlight; }
 }
+
+/* Use forced-color-adjust: none sparingly — it opts the element out of the
+   user's chosen colors, which is what they turned the mode on for. */
 ```
 
 ## Zoom & Reflow Testing
@@ -246,8 +250,8 @@ p { margin-bottom: 2em !important; }
 ### Animation Safety
 - [ ] No content flashes >3 times/second
 - [ ] Auto-playing content can be paused
-- [ ] Respect prefers-reduced-motion
-- [ ] Session timeouts have warning
+- [ ] Respect prefers-reduced-motion (`[DS Requirement]` or `[Best Practice]`, not a WCAG AA failure)
+- [ ] Session timeouts warn with at least 20 seconds to extend
 
 ## Reporting Issues
 

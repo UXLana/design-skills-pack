@@ -1,6 +1,8 @@
 # Forms & Data Entry
 
-⚠️ **Critical for Compliance Software** — Form accessibility is essential for regulatory applications. Users must be able to complete forms accurately and correct errors.
+**Contents:** Core Requirements · Labels · Required Fields · Help Text & Instructions · Error Handling · Error Prevention (3.3.4) · Input Purpose (1.3.5) · Redundant Entry (3.3.7) · Session Timeouts · Issue Templates · Form Readiness Checklist
+
+Forms are where most task-blocking failures happen. Users must be able to complete them accurately and recover from errors — and in compliance mode this file is always loaded. For regulated record-keeping and attestation flows, also see `regulated-workflows.md` (opt-in).
 
 ## Core Requirements
 
@@ -20,24 +22,24 @@
 
 ```tsx
 // ✓ Explicit label with htmlFor
-<label htmlFor="license-number">License Number</label>
-<input id="license-number" type="text" />
+<label htmlFor="member-id">Membership number</label>
+<input id="member-id" type="text" />
 
 // ✓ Wrapping label
 <label>
-  <span>License Number</span>
+  <span>Membership number</span>
   <input type="text" />
 </label>
 
 // ✓ aria-label for visually hidden label
 <input 
   type="search" 
-  aria-label="Search inventory"
+  aria-label="Search orders"
   placeholder="Search..."
 />
 
 // ❌ Placeholder is NOT a label
-<input type="text" placeholder="Enter license number" />
+<input type="text" placeholder="Enter membership number" />
 ```
 
 ### Label Requirements
@@ -75,14 +77,14 @@
 
 ```tsx
 // Help text linked via aria-describedby
-<label htmlFor="batch-id">Batch ID</label>
+<label htmlFor="order-id">Order number</label>
 <input 
-  id="batch-id" 
+  id="order-id" 
   type="text"
-  aria-describedby="batch-help"
+  aria-describedby="order-help"
 />
-<p id="batch-help" className="help-text">
-  Enter the 8-character batch identifier from your transfer manifest
+<p id="order-help" className="help-text">
+  Enter the 8-character order number from your confirmation email
 </p>
 
 // Multiple descriptions
@@ -90,7 +92,7 @@
   id="weight"
   aria-describedby="weight-help weight-error"
 />
-<p id="weight-help">Enter weight in grams</p>
+<p id="weight-help">Enter weight in kilograms</p>
 <p id="weight-error" role="alert">Weight must be greater than 0</p>
 ```
 
@@ -133,7 +135,7 @@ When error is known, suggest correction:
 
 // ✓ Suggests valid values
 <p id="state-error" role="alert">
-  Invalid state code. Valid options: CA, CO, OR, WA
+  Invalid country code. Use two letters, e.g. US, GB, DE
 </p>
 
 // ❌ Vague error
@@ -166,7 +168,7 @@ For forms with multiple errors, provide summary at form level:
 
 ## Error Prevention (3.3.4)
 
-**Required for legal, financial, or data-modifying transactions.**
+**Applies to submissions that create legal commitments or financial transactions, modify or delete user-controllable data, or submit test responses.** Meet it with at least one of: the submission is reversible, the input is checked and the user can correct errors, or the user reviews and confirms before finalizing.
 
 ### Confirmation for Critical Actions
 
@@ -174,17 +176,17 @@ For forms with multiple errors, provide summary at form level:
 // Delete confirmation
 <AlertDialog>
   <AlertDialogTrigger asChild>
-    <Button variant="destructive">Delete Batch</Button>
+    <Button variant="destructive">Delete Project</Button>
   </AlertDialogTrigger>
   <AlertDialogContent>
-    <AlertDialogTitle>Delete Batch #12345?</AlertDialogTitle>
+    <AlertDialogTitle>Delete project "Spring launch"?</AlertDialogTitle>
     <AlertDialogDescription>
       This action cannot be undone. This will permanently delete the 
-      batch record and all associated transfers.
+      project and all of its files.
     </AlertDialogDescription>
     <AlertDialogCancel>Cancel</AlertDialogCancel>
     <AlertDialogAction onClick={handleDelete}>
-      Yes, delete batch
+      Yes, delete project
     </AlertDialogAction>
   </AlertDialogContent>
 </AlertDialog>
@@ -199,22 +201,22 @@ function ReviewPage({ formData, onEdit, onSubmit }) {
     <div>
       <h2>Review Your Submission</h2>
       
-      <section aria-labelledby="transfer-details">
-        <h3 id="transfer-details">Transfer Details</h3>
+      <section aria-labelledby="shipping-details">
+        <h3 id="shipping-details">Shipping Details</h3>
         <dl>
-          <dt>Origin Facility</dt>
+          <dt>Ship from</dt>
           <dd>{formData.origin}</dd>
-          <dt>Destination</dt>
+          <dt>Ship to</dt>
           <dd>{formData.destination}</dd>
           {/* ... other fields */}
         </dl>
-        <Button onClick={() => onEdit('transfer')}>
-          Edit Transfer Details
+        <Button onClick={() => onEdit('shipping')}>
+          Edit Shipping Details
         </Button>
       </section>
       
       <Button variant="primary" onClick={onSubmit}>
-        Submit Transfer
+        Place Order
       </Button>
     </div>
   );
@@ -246,7 +248,8 @@ function useUndoableDelete(onDelete) {
   return { deleted, handleDelete, handleUndo };
 }
 
-// Usage with toast
+// Usage with toast. A timed undo window is a time limit under 2.2.1 —
+// keep the toast until the user dismisses it or moves on, or let them extend it.
 {deleted && (
   <div role="status" aria-live="polite">
     Item deleted. 
@@ -325,29 +328,7 @@ Don't require users to re-enter information:
 
 ## Session Timeouts
 
-For compliance software, warn users before session expires:
-
-```tsx
-function SessionWarning({ timeRemaining, onExtend, onLogout }) {
-  return (
-    <AlertDialog open={timeRemaining < 60}>
-      <AlertDialogContent role="alertdialog">
-        <AlertDialogTitle>Session Expiring</AlertDialogTitle>
-        <AlertDialogDescription>
-          Your session will expire in {timeRemaining} seconds. 
-          Would you like to continue working?
-        </AlertDialogDescription>
-        <AlertDialogAction onClick={onExtend}>
-          Continue Session
-        </AlertDialogAction>
-        <AlertDialogCancel onClick={onLogout}>
-          Log Out
-        </AlertDialogCancel>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-}
-```
+Warn before a session expires and give users at least 20 seconds to extend it with a simple action, or let them turn the limit off or adjust it (2.2.1). Keep entered data if the session does expire. The pattern lives in `motion.md` ("Session Timeouts (2.2.1)") — one home, so the warning timing stays consistent.
 
 ## Issue Templates
 
@@ -368,11 +349,11 @@ Every form input must have an accessible label
 **Code Fix:**
 \`\`\`tsx
 // Before
-<input placeholder="Search inventory..." />
+<input placeholder="Search orders..." />
 
 // After
-<label htmlFor="search" className="sr-only">Search inventory</label>
-<input id="search" placeholder="Search inventory..." />
+<label htmlFor="search" className="sr-only">Search orders</label>
+<input id="search" placeholder="Search orders..." />
 \`\`\`
 ```
 
@@ -445,17 +426,15 @@ Critical/irreversible actions require confirmation step
 \`\`\`
 ```
 
-## Regulatory Compliance Checklist
-
-For regulated compliance software:
+## Form Readiness Checklist
 
 - [ ] All inputs have visible labels
-- [ ] Required fields marked visually and programmatically
+- [ ] Required fields marked visually and programmatically (native `required`)
 - [ ] Error messages specific and actionable
 - [ ] Errors linked to inputs via aria-describedby
-- [ ] Confirmation dialogs for all destructive actions
-- [ ] Review step before final submission
-- [ ] Session timeout warnings with extend option
+- [ ] Legal, financial and data-deleting submissions are reversible, checked or confirmed
+- [ ] Review step before final submission of multi-step forms
+- [ ] Session timeout warnings with an extend option
 - [ ] Undo capability where feasible
-- [ ] Audit trail entries announced to screen readers
-- [ ] Form data persists during session (no loss on error)
+- [ ] Form data persists during the session (no loss on error)
+- [ ] Regulated record-keeping or attestation flow? Run `regulated-workflows.md` too

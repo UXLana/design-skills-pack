@@ -1,17 +1,32 @@
 /**
- * Design System - Theme Interface
+ * Starter theme contract (ProductTheme)
  *
- * Every product theme must implement this interface.
- * Color structure matches Figma ds_sys_color_* taxonomy exactly.
+ * A starting point, not a standard. Use it only when the repo has no theme contract of its own
+ * (see SKILL.md, Step 0). Copy it into the repo, then rename, add or drop keys to fit the
+ * product. Every key here is generic UI; product-specific roles belong in your copy, not here.
  *
- * Non-color tokens (typography, radius, elevation, spacing, iconStyle)
- * follow the same CSS custom property pattern — each produces --ds-<category>-*
- * vars at runtime so themes look visually distinct beyond just color.
+ * Contents
+ *   ThemeColors .............. brand, accent, surface, surfaceBorder, text, border, icon, iconBg,
+ *                              action, status, badge, avatar, dataViz, cvd, interaction states
+ *                              (hover, selected, focusBorder, scrim), and small component roles
+ *                              (scrollbar, navItemText, buttonToggleBg, chipBg,
+ *                              progressIndicatorTrack, tableCellHighlight)
+ *   ThemeTypography .......... font families, weights, line-height and letter-spacing tuning
+ *   ThemeBorderRadius ........ radius scale + buildBorderRadius(base)
+ *   ThemeElevation ........... shadow scale, including brand-tinted shadows
+ *   ThemeSpacing ............. semantic spacing overrides (the numeric scale stays global)
+ *   ThemeIconStyle ........... icon set, stroke width, corner style, size, per-icon overrides
+ *   ThemeComponentRadius ..... per-component radii + buildComponentRadius(base, overrides)
+ *   ProductTheme ............. the composite every theme implements
  *
- * To create a new theme:
- * 1. Copy your default theme file (e.g. default.ts) as a starting point
+ * Naming: colors come in onLight / onDark pairs so one theme can serve both surfaces.
+ * Non-color groups (typography, radius, elevation, spacing, iconStyle) are meant to be emitted
+ * as CSS custom properties at runtime (e.g. --ds-radius-md) so themes differ beyond color.
+ *
+ * To create a theme from this starter:
+ * 1. Copy an existing theme file (e.g. default.ts) as a starting point
  * 2. Override every value in colors, typography, borderRadius, elevation, spacing, iconStyle
- * 3. Register it in theme-provider.ts
+ * 3. Register it in the theme registry (e.g. theme-provider.tsx) and the themes barrel (index.ts)
  */
 
 export interface ThemeColors {
@@ -189,8 +204,8 @@ export interface ThemeColors {
     greenLight: string;
     yellow: string;
     yellowLight: string;
-    fuschia: string;
-    fuschiaLight: string;
+    fuchsia: string;
+    fuchsiaLight: string;
     purple: string;
     purpleLight: string;
     charcoal: string;
@@ -259,11 +274,6 @@ export interface ThemeColors {
     highEmphasis: string;
     midEmphasis: string;
   };
-
-  grid: {
-    finishedRowText: string;
-    packageIconColor: string;
-  };
 }
 
 // ---------------------------------------------------------------------------
@@ -318,7 +328,7 @@ export interface ThemeBorderRadius {
  * All tokens cascade from the base via fixed multipliers [1, 2, 4, 6, 8, 12, 16].
  * Changing the base for a theme updates every radius token consistently.
  *
- * Example bases: University=1, Product B=2, Earth=3, Default=4
+ * Example bases: 1 = sharp and formal, 2-3 = balanced, 4 = soft (md radius 16px)
  */
 export function buildBorderRadius(base: number): ThemeBorderRadius {
   return {

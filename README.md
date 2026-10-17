@@ -17,11 +17,11 @@ and any brand.
 
 | Stage | Skill | What it does for you |
 | --- | --- | --- |
-| **1. Frame & decide** | `design-brief-generator` | Runs guided discovery, or synthesizes notes, Slack threads and form responses into a structured design brief or PRD. |
+| **1. Frame & decide** | `design-brief-generator` | Runs guided discovery one section at a time, or turns kickoff notes, Slack threads and intake-form answers into a design brief: problem, users, hypothesis, scope, accessibility target and success metrics. |
 | | `design-lead-thought-partner` | A candid thinking partner for brainstorming, stress-testing ideas and working through tradeoffs, with decision frameworks (Cynefin, RICE, RAPID, MoSCoW) when you want structure. |
 | | `requirements-to-decision-doc` | Turns raw requirements, sync notes or PRD fragments into a status-tagged HTML decision doc that engineering and stakeholders can review. |
 | **2. Design with a system** | `design-system-perspectives` | Before risky design-system work, argues the positive, negative and neutral case and waits for your call. |
-| | `brand-tokens-translator` | Reads brand guidelines (PDF, text or screenshots) and produces primitive and semantic design tokens for Figma Variables and CSS. |
+| | `brand-tokens-translator` | Reads brand guidelines (PDF, text or screenshots) and produces primitive and semantic design tokens as a review table and a DTCG `tokens.json` that Figma can import and CSS can use. |
 | | `theme-generator` | Builds a full product theme from one brand color, and audits existing themes for token coverage and contrast. |
 | | `token-audit` | Finds hard-coded colors, spacing, type, radii and shadows in code and maps each one to a token, or flags it for a new one. |
 | | `component-generator` | Creates production-ready React and TypeScript components on top of your existing primitives, following atomic design. |
@@ -32,18 +32,19 @@ and any brand.
 | | `ui-edge-case-audit` | Finds the empty, loading, error and boundary states a prototype forgot, then builds them. |
 | | `responsive-audit` | Catches fixed widths, rigid flex layouts, missing breakpoints and cropped images before they ship. |
 | | `visual-qa` | Checks UI changes with real browser screenshots and interaction checks on desktop and mobile. |
-| **4. Accessibility** | `design-accessibility` | Audits and fixes components and tokens against WCAG 2.2 AA, with a compliance mode that adds Section 508 for government and regulated work, and a report mode for formal documentation. Every finding cites its source, so a team preference is never passed off as a WCAG failure. |
+| **4. Accessibility** | `design-accessibility` | Audits and fixes components, tokens and screens against WCAG 2.2 AA. Compliance mode maps findings to the standard your contract names (Section 508, ADA Title II, or EN 301 549 for the European Accessibility Act), and report mode writes a formal conformance report. Every finding cites its source, so a team preference is never passed off as a WCAG failure. |
 | **5. Hand off** | `intent-spec` | Interviews you one question at a time to capture a feature's intent, then adds the scope, edge cases, states, accessibility and test plan to make it build-ready. Your decisions stay yours. |
 | | `spec-pack` | Writes a short spec contract before AI-assisted coding starts, or reverse-engineers one from a feature that already exists. |
 | | `flow-diagram-render` | Renders Mermaid diagrams to PNG or SVG for the places live Mermaid doesn't run: Confluence, Slack, slides, PDFs and email. |
 | **6. Show the impact** | `case-study-capture` | Interviews you for the problem, decisions, your influence and the outcomes, then shapes an evidence-based case study. |
-| | `content-writer` | Drafts LinkedIn posts and blog articles for UX and product leadership audiences, from hook to call to action. |
+| | `content-writer` | Drafts LinkedIn posts and blog articles for UX and product leadership audiences, from hook to closing line. |
 
 ### Why accessibility has its own stage
 
-Accessibility isn't a QA step you add at the end. `design-accessibility` covers WCAG 2.2 AA in full,
-plus Section 508 for teams selling to government, with references for color contrast, keyboard, forms,
-ARIA patterns, motion, typography and cognitive load. Several other skills (`theme-generator`,
+Accessibility isn't a QA step you add at the end. `design-accessibility` covers WCAG 2.2 AA in full, plus
+the legal standards teams actually get held to: Section 508 for US federal work, ADA Title II for state
+and local government, and EN 301 549 for the European Accessibility Act. It has references for color
+contrast, keyboard, pointer targets, forms, ARIA patterns, motion, typography and cognitive load. Several other skills (`theme-generator`,
 `icon-generator`, `intent-spec`, `spec-pack`) build accessibility checks into their own steps, so it
 shows up from the first token onward.
 
@@ -139,7 +140,7 @@ Repeat for each skill you want. Anthropic's current steps are in
 - **Some skills expect a stack.** `component-generator`, `token-audit`, `responsive-audit` and
   `design-accessibility` assume a React and TypeScript codebase with design tokens. `visual-qa` needs a
   browser tool (Claude's built-in browser or Playwright). `flow-diagram-render` runs Mermaid CLI through
-  `npx`, so it needs Node.js.
+  `npx`, and `theme-generator` ships a small contrast script, so both need Node.js.
 - **They adapt to your system.** Wherever a skill mentions "your design system," it looks for your tokens,
   components and conventions in the project you're working in. Nothing here is tied to a brand.
 - **Memory is optional.** A few skills can recall past results and save new ones if your setup has a

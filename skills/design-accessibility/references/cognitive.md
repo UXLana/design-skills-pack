@@ -1,206 +1,26 @@
-# Cognitive Accessibility (WCAG 2.2)
+# Cognitive & Input Assistance (WCAG 2.2)
 
-WCAG 2.2 added new criteria specifically addressing cognitive accessibility. These are particularly important for compliance software where users may be under stress, fatigued, or have cognitive disabilities.
+WCAG 2.2 added criteria that reduce memory, re-typing and puzzle-solving — help for anyone completing a long or high-stakes task while tired, stressed or distracted, and essential for people with cognitive and learning disabilities.
 
-## New WCAG 2.2 Criteria
+## WCAG 2.2 Additions — Where Each Is Covered
 
-| Criterion | Level | Requirement |
-|-----------|-------|-------------|
-| 2.4.11 Focus Not Obscured (Minimum) | AA | Focused element not entirely hidden |
-| 2.4.12 Focus Not Obscured (Enhanced) | AAA | Focused element fully visible |
-| 2.4.13 Focus Appearance | AAA | Focus indicator meets size/contrast |
-| 2.5.7 Dragging Movements | AA | Drag has single-pointer alternative |
-| 2.5.8 Target Size (Minimum) | AA | 24×24 CSS pixels minimum |
-| 3.2.6 Consistent Help | A | Help in consistent location |
-| 3.3.7 Redundant Entry | A | No re-entering previous info |
-| 3.3.8 Accessible Authentication (Minimum) | AA | No cognitive function tests |
-| 3.3.9 Accessible Authentication (Enhanced) | AAA | No object/image recognition |
+WCAG 2.2 added nine criteria. Only the 3.x ones are cognitive; the rest belong to focus and pointer input.
 
-## Focus Not Obscured (2.4.11)
-
-When an element receives focus, it must not be entirely hidden by other content.
-
-### Common Violations
-```tsx
-// ❌ Sticky header covers focused content
-<header className="fixed top-0 h-16 z-50">
-  Navigation
-</header>
-<main>
-  {/* Focused elements may scroll under header */}
-  <button>This might be hidden</button>
-</main>
-
-// ✓ Account for fixed elements with scroll-padding
-<style>
-  html {
-    scroll-padding-top: 80px; /* Header height + buffer */
-  }
-</style>
-
-// ✓ Or scroll element into view with offset
-function focusWithOffset(element: HTMLElement) {
-  element.focus();
-  const headerHeight = 80;
-  const rect = element.getBoundingClientRect();
-  if (rect.top < headerHeight) {
-    window.scrollBy(0, rect.top - headerHeight - 16);
-  }
-}
-```
-
-### Modal/Dialog Focus
-
-```tsx
-// ✓ Focus visible first interactive element, not obscured
-function Modal({ children }) {
-  const firstFocusableRef = useRef<HTMLButtonElement>(null);
-  
-  useEffect(() => {
-    // Ensure modal is fully rendered before focusing
-    requestAnimationFrame(() => {
-      firstFocusableRef.current?.focus();
-    });
-  }, []);
-  
-  return (
-    <div role="dialog" aria-modal="true">
-      {/* Focus target is visible, not covered by overlay */}
-      <button ref={firstFocusableRef}>Close</button>
-      {children}
-    </div>
-  );
-}
-```
-
-## Target Size (2.5.8)
-
-Interactive targets must be at least 24×24 CSS pixels.
-
-### Requirements
-- Minimum 24×24 CSS pixels (AA)
-- Enhanced 44×44 CSS pixels (AAA)
-- Exceptions: inline links in text, native controls unchanged
-
-### Audit Pattern
-```typescript
-const targetSizeAudit = {
-  minSize: 24, // AA requirement
-  enhancedSize: 44, // AAA / best practice for touch
-  
-  // Components to audit
-  targets: [
-    'button',
-    'a[href]',
-    'input[type="checkbox"]',
-    'input[type="radio"]',
-    '[role="button"]',
-    '[role="tab"]',
-    '[role="menuitem"]',
-  ],
-  
-  // Exclusions
-  exceptions: [
-    'Inline links within sentences',
-    'Size determined by user agent',
-    'Essential presentation requires specific size',
-  ]
-};
-```
-
-### Implementation
-
-```tsx
-// ✓ Minimum touch target with spacing
-<button className="min-h-[44px] min-w-[44px] p-2">
-  <Icon size={24} />
-</button>
-
-// ✓ Small visual, large touch target
-<Checkbox className="relative">
-  <input 
-    type="checkbox"
-    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-    /* Invisible input covers full 44×44 area */
-  />
-  <div className="w-4 h-4">
-    {/* 16×16 visual checkbox */}
-  </div>
-</Checkbox>
-
-// ✓ Icon button with adequate size
-<IconButton aria-label="Settings" className="p-3">
-  {/* Padding creates 44×44 total */}
-  <GearIcon className="w-5 h-5" />
-</IconButton>
-```
-
-## Dragging Movements (2.5.7)
-
-Any drag operation must have a single-pointer alternative.
-
-### Alternatives Required
-```tsx
-// Drag-to-reorder list needs alternative
-function ReorderableList({ items, onReorder }) {
-  return (
-    <ul>
-      {items.map((item, index) => (
-        <li key={item.id} draggable>
-          <span>{item.name}</span>
-          
-          {/* Single-pointer alternatives */}
-          <button 
-            onClick={() => onReorder(index, index - 1)}
-            disabled={index === 0}
-            aria-label={`Move ${item.name} up`}
-          >
-            ↑
-          </button>
-          <button 
-            onClick={() => onReorder(index, index + 1)}
-            disabled={index === items.length - 1}
-            aria-label={`Move ${item.name} down`}
-          >
-            ↓
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// Drag-to-resize needs alternative
-function ResizablePanel({ children }) {
-  const [width, setWidth] = useState(300);
-  
-  return (
-    <div style={{ width }}>
-      {children}
-      
-      {/* Drag handle */}
-      <div 
-        className="resize-handle"
-        onMouseDown={handleDragStart}
-      />
-      
-      {/* Single-pointer alternative */}
-      <div className="resize-buttons">
-        <button onClick={() => setWidth(w => w - 50)}>
-          Narrow
-        </button>
-        <button onClick={() => setWidth(w => w + 50)}>
-          Wider
-        </button>
-      </div>
-    </div>
-  );
-}
-```
+| Criterion | Level | Category | Covered in |
+|-----------|-------|----------|------------|
+| 2.4.11 Focus Not Obscured (Minimum) | AA | Keyboard & Focus | `keyboard.md` |
+| 2.4.12 Focus Not Obscured (Enhanced) | AAA | Keyboard & Focus | `keyboard.md` |
+| 2.4.13 Focus Appearance | AAA | Keyboard & Focus | `color-contrast.md` |
+| 2.5.7 Dragging Movements | AA | Pointer & Target Size | `pointer.md` |
+| 2.5.8 Target Size (Minimum) | AA | Pointer & Target Size | `pointer.md` |
+| 3.2.6 Consistent Help | A | Cognitive & Input Assistance | below |
+| 3.3.7 Redundant Entry | A | Cognitive & Input Assistance | below |
+| 3.3.8 Accessible Authentication (Minimum) | AA | Cognitive & Input Assistance | below |
+| 3.3.9 Accessible Authentication (Enhanced) | AAA | Cognitive & Input Assistance | below |
 
 ## Consistent Help (3.2.6)
 
-Help mechanisms must appear in the same relative location across pages.
+If a help mechanism is repeated across pages, it appears in the same order relative to the other page content, unless the user changes it. The criterion doesn't require you to provide help — only to keep it where people learned to find it.
 
 ### Implementation
 ```tsx
@@ -213,9 +33,9 @@ function PageLayout({ children }) {
         {/* Help always in header, same position */}
         <HelpButton />
       </header>
-      
+
       <main>{children}</main>
-      
+
       <footer>
         {/* Or consistently in footer */}
         <a href="/help">Help Center</a>
@@ -226,15 +46,15 @@ function PageLayout({ children }) {
 }
 
 // Help mechanisms include:
-// - Human contact (phone, email, chat)
-// - Human contact mechanism (contact form)
+// - Human contact details (phone, email)
+// - Human contact mechanism (chat, contact form)
 // - Self-help option (FAQ, help center)
-// - Fully automated contact (chatbot)
+// - Fully automated contact mechanism (chatbot)
 ```
 
 ## Redundant Entry (3.3.7)
 
-Don't require users to re-enter information they've already provided.
+Information the user already entered (or was given) in the same process is either auto-populated or available to select, so they don't have to type it again.
 
 ### Patterns
 ```tsx
@@ -242,16 +62,16 @@ Don't require users to re-enter information they've already provided.
 function CheckoutForm({ userData }) {
   return (
     <form>
-      <input 
-        name="email" 
+      <input
+        name="email"
         defaultValue={userData.email}
         /* Pre-filled from account */
       />
-      
+
       {/* Offer to copy from previous step */}
       <label>
-        <input 
-          type="checkbox" 
+        <input
+          type="checkbox"
           onChange={copyShippingToBilling}
         />
         Billing address same as shipping
@@ -260,7 +80,7 @@ function CheckoutForm({ userData }) {
   );
 }
 
-// ✓ Auto-complete previous entries
+// ✓ Offer previous entries to select
 function SearchInput({ recentSearches }) {
   return (
     <Combobox>
@@ -277,131 +97,101 @@ function SearchInput({ recentSearches }) {
 }
 
 // Exceptions:
-// - Re-entering for security (confirm email)
-// - Information is no longer valid
-// - Re-entering is essential (confirming legal agreement)
+// - Re-entering is essential (e.g., a memory game)
+// - Security requires it (e.g., confirming a newly created password that isn't displayed)
+// - The earlier information is no longer valid
+// A "re-type your email to confirm" field is not a security exception — see forms.md.
 ```
 
 ## Accessible Authentication (3.3.8)
 
-No cognitive function tests for authentication.
+No step of signing in may require a **cognitive function test** — remembering a password, transcribing characters, solving a puzzle, doing a calculation — unless that step offers at least one of:
 
-### Prohibited
-- CAPTCHAs requiring recognition of objects/images
-- Puzzles (drag pieces, identify images)
-- Transcribing text from images
-- Remembering passwords without assistance
+| Allowed when… | Example |
+|---|---|
+| **Alternative** — another method that isn't a cognitive test | Passkey, emailed sign-in link, an identity provider |
+| **Mechanism** — something helps the user complete the test | Password managers can fill the field; paste is allowed |
+| **Object recognition** — the test is recognising objects | "Select the images with bicycles" |
+| **Personal content** — the test is identifying content the user supplied | "Choose the photo you uploaded" |
 
-### Allowed
+Object recognition and personal content are allowed at AA. They are disallowed only at **3.3.9 Accessible Authentication (Enhanced), AAA** — so don't flag an image-recognition CAPTCHA as an AA failure.
+
+### Fails 3.3.8 (unless an alternative or mechanism exists)
+- Transcribing distorted text or characters from an image or audio clip
+- Puzzles (drag the piece, rotate the image, solve the sum)
+- Blocking paste or password-manager fill on a password or verification-code field
+
+### Passes
 ```tsx
-// ✓ Copy-paste allowed for passwords
-<input 
+// ✓ Paste and password managers allowed
+<input
   type="password"
+  name="password"
   autoComplete="current-password"
   /* Don't block paste */
 />
 
-// ✓ Password managers supported
-<input 
-  type="password"
-  name="password"
-  autoComplete="current-password"
+// ✓ Verification code the browser or a password manager can fill
+<input
+  name="otp"
+  inputMode="numeric"
+  autoComplete="one-time-code"
 />
 
 // ✓ Passkeys / WebAuthn
 <button onClick={authenticateWithPasskey}>
-  Sign in with Passkey
+  Sign in with a passkey
 </button>
 
-// ✓ Magic links
+// ✓ Emailed sign-in link
 <form>
-  <input type="email" name="email" />
-  <button>Send login link</button>
+  <label htmlFor="login-email">Email</label>
+  <input id="login-email" type="email" name="email" autoComplete="email" />
+  <button>Send sign-in link</button>
 </form>
-
-// ✓ Personal content recognition (not object recognition)
-// "Click the photo you uploaded"
-// Not "Click all photos with traffic lights"
 ```
+
+3.3.8 covers authentication only. Blocking paste on an ordinary form field is poor practice (`[Best Practice]`), but it isn't a 3.3.8 failure.
 
 ## Issue Templates
 
-### Target Size Too Small
+### Cognitive Test Without Alternative
 ```markdown
-### [MODERATE] Target size below minimum
+### [SERIOUS] Sign-in requires transcribing a text CAPTCHA
 
-**WCAG Criterion:** 2.5.8 — Target Size (Minimum) (Level AA)
-**Location:** `src/components/Pagination.tsx:28`
-**Category:** Cognitive Accessibility
+**WCAG Criterion:** 3.3.8 — Accessible Authentication (Minimum) (Level AA)
+**Source label:** [WCAG 2.2 AA]
+**Location:** `src/features/auth/SignIn.tsx:54`
+**Category:** Cognitive & Input Assistance
 
 **Current State:**
-Page number buttons are 20×20 pixels
+Users must type distorted characters from an image to sign in; no alternative method
 
 **Required State:**
-Interactive targets must be at least 24×24 CSS pixels
-
-**Code Fix:**
-\`\`\`tsx
-// Before
-<button className="w-5 h-5">1</button>
-
-// After
-<button className="min-w-[24px] min-h-[24px] p-1">1</button>
-\`\`\`
+Remove the transcription test, or offer an alternative (passkey, emailed link) or a mechanism.
+An object-recognition challenge would also pass at AA.
 ```
 
-### Drag Without Alternative
+### Paste Blocked on Password
 ```markdown
-### [SERIOUS] Drag operation without single-pointer alternative
+### [SERIOUS] Password field blocks paste
 
-**WCAG Criterion:** 2.5.7 — Dragging Movements (Level AA)
-**Location:** `src/components/SortableList.tsx:15`
-**Category:** Cognitive Accessibility
+**WCAG Criterion:** 3.3.8 — Accessible Authentication (Minimum) (Level AA)
+**Source label:** [WCAG 2.2 AA]
+**Location:** `src/features/auth/PasswordField.tsx:12`
+**Category:** Cognitive & Input Assistance
 
 **Current State:**
-List items can only be reordered via drag-and-drop
-
-**Required State:**
-Provide button-based alternative for reordering
+`onPaste={(e) => e.preventDefault()}` stops password managers and paste
 
 **Code Fix:**
-Add move up/down buttons alongside drag handle
-```
-
-### Focus Obscured
-```markdown
-### [SERIOUS] Focused element obscured by sticky header
-
-**WCAG Criterion:** 2.4.11 — Focus Not Obscured (Level AA)
-**Location:** `src/layouts/MainLayout.tsx`
-**Category:** Cognitive Accessibility
-
-**Current State:**
-When tabbing through page, focused elements scroll under 64px sticky header
-
-**Required State:**
-Focused elements must not be entirely hidden
-
-**Code Fix:**
-\`\`\`css
-/* Add scroll padding to account for fixed header */
-html {
-  scroll-padding-top: 80px;
-}
-
-/* Or use scroll-margin on focusable elements */
-button, a, input, select, textarea {
-  scroll-margin-top: 80px;
-}
-\`\`\`
+Remove the paste handler and set `autoComplete="current-password"`
 ```
 
 ## Testing Checklist
 
-- [ ] All interactive elements ≥24×24 pixels
-- [ ] Drag operations have button alternatives
-- [ ] Help is in consistent location across pages
-- [ ] Form data pre-populated where possible
-- [ ] No cognitive tests for authentication
-- [ ] Focus not hidden by sticky/fixed elements
-- [ ] Tab through page with sticky header visible
+- [ ] Help is in a consistent location across pages
+- [ ] Information from earlier steps is pre-populated or selectable
+- [ ] Sign-in works with a password manager and with paste
+- [ ] No transcription or puzzle test at sign-in without an alternative
+- [ ] Focus, pointer and target-size checks run from `keyboard.md` and `pointer.md`

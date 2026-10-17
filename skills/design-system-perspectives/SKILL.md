@@ -1,27 +1,35 @@
 ---
 name: design-system-perspectives
-description: Surface tradeoffs and risks BEFORE committing to design system work. Runs three perspectives (Positive, Negative, Neutral) on ambiguous or risky requests, writes advisory output to _design_task.md, and waits for user confirmation before proceeding. Run it directly, or have your design-system workflow's orchestrator call it, for new component APIs, breaking changes, token architecture changes, or ambiguous requirements.
+description: 'Pre-build advisory for a concrete design system change: runs three fixed perspectives (Positive, Negative, Neutral) on a proposed component API, breaking change, token architecture change or pattern decision, writes them to _design_task.md (or shows them inline), and waits for the user''s go-ahead before any code or docs change. Use when the user asks "should we...", "pros and cons of this API", "is this a breaking change", "what are the risks before we build X", "sanity-check this token change", "should Button be polymorphic", or gives an ambiguous request like "make the Card more flexible". Skip for routine prop additions, styling within existing tokens, bug fixes and docs-only edits. For open-ended product or design brainstorming not tied to a specific design system change, use design-lead-thought-partner.'
 ---
 
 # Design System Perspectives
 
-> **Role:** The Council's Advisors (Angel, Devil, Arbiter) — the advisory seat if you run a multi-skill design-system workflow; works standalone too
-> **Purpose:** Surface tradeoffs and risks BEFORE committing to work
-> **Output:** Advisory only — does not modify code or documentation
+> **Role:** Pre-build advisor: three perspectives on a design system change before anything is built¹
+> **Purpose:** Surface tradeoffs and risks before committing to work
+> **Output:** Advisory only; does not modify code or documentation
+
+¹ In a multi-skill design-system workflow this is the advisory seat, and the three perspectives are sometimes nicknamed Angel (Positive), Devil (Negative) and Arbiter (Neutral). It works the same standalone.
 
 ---
 
 ## Overview
 
-This skill provides three distinct viewpoints on design system decisions that involve ambiguity, architectural risk, or significant tradeoffs. Each perspective evaluates the same problem independently, and disagreement is preserved — not resolved.
+This skill provides three distinct viewpoints on design system decisions that involve ambiguity, architectural risk, or significant tradeoffs. Each perspective evaluates the same problem independently, and disagreement is preserved, not resolved.
 
 The goal is **clarity about tradeoffs**, not consensus.
 
 ---
 
+## The Advisory File
+
+The advisory lives in `_design_task.md`, a scratch file for the current design-system task. If it doesn't exist, create it at the repository root containing only the Perspectives section. If you can't write files, or the user would rather not have one, show the section inline in chat instead; everything else works the same. Some workflows keep other sections in this file (a docs audit, a build checklist). Put Perspectives first as section 0 and leave the others alone. If there are none, ignore any mention of them below.
+
+---
+
 ## The Three Perspectives
 
-### Positive (The Angel)
+### Positive
 **Mindset:** Optimistic advocate. Focuses on opportunity.
 
 Evaluates:
@@ -35,7 +43,7 @@ Evaluates:
 
 ---
 
-### Negative (The Devil)
+### Negative
 **Mindset:** Skeptical critic. Focuses on risk.
 
 Evaluates:
@@ -50,7 +58,7 @@ Evaluates:
 
 ---
 
-### Neutral (The Arbiter)
+### Neutral
 **Mindset:** Balanced analyst. Focuses on evidence.
 
 Evaluates:
@@ -64,29 +72,46 @@ Evaluates:
 
 ---
 
-## Trigger Conditions
+## When to Run
 
-Run this skill (directly, or from your orchestrating skill if you run a multi-skill design-system workflow) when the request involves:
+Run this skill directly, or from your orchestrating skill if you run a multi-skill design-system workflow, when the request is a specific design system change with real tradeoffs:
 
-| Trigger | Example |
-|---------|---------|
-| **New component API design** | "Create a Modal component" |
-| **Breaking changes** | "Rename `isDisabled` to `disabled`" |
-| **Token architecture changes** | "Add a new color scale" |
-| **Pattern decisions** | "Should Button support polymorphism?" |
+| Trigger | What the user might say |
+|---------|-------------------------|
+| **New component API design** | "Create a Modal component", "what should the Tabs API look like?" |
+| **Breaking changes** | "Rename `isDisabled` to `disabled`", "is this a breaking change?" |
+| **Token architecture changes** | "Add a new color scale", "sanity-check this token change" |
+| **Pattern decisions** | "Should Button be polymorphic?", "pros and cons of this API" |
 | **Ambiguous requirements** | "Make the Card more flexible" |
+| **Risk check before a build** | "What are the risks before we build X?", "should we..." |
 
-### NOT triggered for:
-- Adding a prop to existing component (routine)
+### Skip for
+- Adding a prop to an existing component (routine)
 - Styling tweaks within existing tokens
 - Bug fixes
 - Documentation-only updates
+
+### Not this skill
+Open-ended product or design brainstorming, stress-testing a strategy, or devil's advocate on an idea that isn't a specific design system change: use `design-lead-thought-partner`.
+
+---
+
+## Verdicts
+
+Use one set of four verdicts everywhere: the advisory file, the summary to the user, and memory.
+
+| Verdict | Slug | Use when |
+|---------|------|----------|
+| Proceed | `proceed` | The upside is clear and the risks are known and small |
+| Proceed with caution | `proceed-with-caution` | Worth doing with a named scope limit or safeguard |
+| Needs discussion | `needs-discussion` | The call depends on a decision only the user can make |
+| Defer | `defer` | Not worth doing now; say what would change that |
 
 ---
 
 ## Output Format
 
-All perspectives write to `_design_task.md` in a new section that appears BEFORE any docs or code audit section:
+Write the Perspectives as section 0 of `_design_task.md`, ahead of any other sections (or show it inline):
 
 ```markdown
 ## 0. Perspectives (Pre-Build Analysis)
@@ -101,7 +126,7 @@ All perspectives write to `_design_task.md` in a new section that appears BEFORE
 
 ### Neutral
 [2-3 bullet points synthesizing the tradeoff]
-**Recommendation:** [Proceed | Proceed with caution | Needs discussion]
+**Recommendation:** [Proceed | Proceed with caution | Needs discussion | Defer] — [one line on why]
 
 ---
 ```
@@ -116,7 +141,7 @@ User Request
      ▼
 [ Orchestrator / you ]
      │
-     ├─── Routine request? ──────────► Proceed to Workers
+     ├─── Routine request? ──────────► Proceed to the build step
      │
      └─── Risky/ambiguous? ──────────► Invoke /design-system-perspectives
                                               │
@@ -126,7 +151,7 @@ User Request
                               │               │               │
                               └───────────────┼───────────────┘
                                               ▼
-                              Write to _design_task.md
+                              Write to _design_task.md (or inline)
                                               │
                                               ▼
                               Present to user for confirmation
@@ -136,14 +161,12 @@ User Request
                       [User confirms]                [User adjusts]
                               │                               │
                               ▼                               ▼
-                      Proceed to Workers              Re-evaluate
+                      Proceed to the build step       Re-evaluate
 ```
 
 ---
 
-## System Instructions
-
-### When invoked:
+## Steps
 
 1. **Read** the user's original request from context or `_design_task.md`
 
@@ -152,48 +175,49 @@ User Request
    - Negative second (what's the risk?)
    - Neutral last (what's the actual tradeoff?)
 
-3. **Write** the Perspectives section to `_design_task.md`
+3. **Check for unknowns that would flip the call** (see below) and ask about them, if any, before finalizing
+
+4. **Write** the Perspectives section to `_design_task.md`, or show it inline
    - Set `Decision: Awaiting Confirmation`
 
-4. **Present** a summary to the user:
+5. **Present** a summary to the user:
    ```
-   Before I proceed, here's what the Council sees:
+   Three perspectives before I build:
 
    Upside: [1-line summary]
    Risk: [1-line summary]
    Tradeoff: [1-line summary]
 
-   Recommendation: [Proceed / Proceed with caution / Needs discussion]
+   Recommendation: [Proceed | Proceed with caution | Needs discussion | Defer]
 
    Should I continue with the build?
    ```
 
-5. **Wait** for user confirmation before handing off to Workers
+6. **Wait** for the user's go-ahead before handing off to the build step
 
-6. **On confirmation:** Update `Decision: Confirmed` and return control to the build step (or your orchestrator)
+7. **On confirmation:** Update `Decision: Confirmed` and return control to the build step (or your orchestrator)
 
 ---
 
 ## Constraints
 
-- **Advisory only:** This skill NEVER modifies `.tsx` or `.mdx` files
-- **No blocking:** If user says "skip perspectives," respect that and proceed
-- **Brevity:** Each perspective should be 2-4 bullet points, not essays
-- **Disagreement is valid:** Do not force consensus between perspectives
-- **No hallucinated risks:** Only flag concerns grounded in the actual request
+- **Advisory only:** This skill doesn't modify `.tsx` or `.mdx` files; the advisory is the whole output
+- **No blocking:** If the user says "skip perspectives," respect that, set `Decision: Skipped`, and proceed
+- **Brevity:** Each perspective is 2-4 bullet points (Neutral 2-3), not essays; a long advisory doesn't get read
+- **Disagreement is valid:** Don't force consensus between perspectives
+- **No invented risks or numbers:** Only flag concerns grounded in the actual request, and cite a source for any browser-support or usage claim
 
-## Honesty Output Protocol — Interrupt on High-Stakes Unknowns
+## Unknowns That Would Flip the Call
 
-The whole point of Perspectives is to surface tradeoffs honestly. The protocol formalizes the cases where a perspective *itself* is uncertain.
+Generic tradeoffs without the user's context are noise, but stopping to ask about every unknown turns the advisory into a questionnaire. Ask only about the unknowns that would change the recommendation:
 
-For each unknown, classify stakes:
+- For each unknown, ask yourself: if the answer went the other way, would the recommendation change? If yes, it's **blocking**. If not, make a reasonable assumption, state it in the advisory, and move on.
+- Ask at most three blocking unknowns, together in one message, before finalizing. If more seem blocking, ask the three with the biggest effect and state assumptions for the rest.
+- If none are blocking, finalize without asking.
 
-- **high** — a perspective is making a claim that depends on context you don't have. Examples: "The Negative perspective flags maintenance burden, but I don't know if you're maintaining this yourself or handing off to a team." "The Neutral perspective recommends wrapping Floating UI, but I don't know if you're already committed to a different positioning library elsewhere." If wrong, the advisory misdirects the decision.
-- **low** — minor framing choices (which bullet to lead with, exact wording of the recommendation). Decide, log, move on.
+Typical blocking unknowns: "Will you maintain this alone or hand it to a team?" when the maintenance risk decides between Proceed and Defer. "Are you already using a positioning library elsewhere?" when the Neutral tradeoff hinges on adding a dependency.
 
-If any unknown is `high`, append it to `_design_task.md` under `honesty.pending_questions` and ask the user before finalizing the advisory. A misdirected advisory is worse than no advisory — it gives the user false confidence in a wrong direction.
-
-Schema appended to `_design_task.md`:
+Record them in `_design_task.md` (skip this block when showing the advisory inline):
 
 ```yaml
 honesty:
@@ -201,14 +225,12 @@ honesty:
   assumptions:
     - "Treated 'maintain for the foreseeable future' as a 1+ year horizon"
   resolved_questions:
-    - q: "Are you wrapping Floating UI elsewhere, or would this be the first dependency?"
+    - q: "Are you using a positioning library elsewhere, or would this be the first dependency?"
       asked_at: 2026-05-14T15:10Z
-      answered: "First dependency — but I'm already considering it for Popover."
+      answered: "First dependency, but I'm considering it for Popover too."
       answered_at: 2026-05-14T15:11Z
-  pending_questions: []                  # non-empty halts the advisory
+  pending_questions: []                  # non-empty: wait for answers before finalizing
 ```
-
-Special rule for Perspectives: any unknown about **product context, team capacity, or existing commitments** is automatically `high`. The whole value of three-perspective analysis is contextual — generic tradeoffs without your context are noise.
 
 ---
 
@@ -222,23 +244,22 @@ Special rule for Perspectives: any unknown about **product context, team capacit
 **Decision:** Awaiting Confirmation
 
 ### Positive
-- Fills a documented gap in the component library
-- Enables onboarding flows and contextual help patterns
-- Arrow positioning provides visual anchoring that improves comprehension
-- Reusable across multiple product areas (forms, tables, navigation)
+- Fills a gap: contextual help for form fields, table headers and icon-only buttons
+- The native Popover API (Baseline since January 2025) puts the tooltip in the top layer, so it no longer fights Modal and Dropdown over z-index
+- One shared component keeps hover delay, Escape-to-dismiss and focus behavior consistent everywhere
 
 ### Negative
-- Arrow positioning has 12+ edge cases (viewport boundaries, scroll containers, nested overflow)
-- Z-index management will conflict with existing Modal and Dropdown layers
-- Maintenance burden: positioning logic is notoriously fragile across browsers
-- Risk of scope creep — "just add hover delay" → "just add click mode" → complex state machine
+- Tooltips fall under WCAG 2.2 SC 1.4.13 Content on Hover or Focus (AA): dismissible, hoverable and persistent, which needs testing at every placement
+- CSS anchor positioning only became Baseline in January 2026; anyone you support on an older browser needs a fallback placement
+- Scope creep: "add a click mode" or "allow links inside" turns a tooltip into a popover or toggletip with different semantics
 
 ### Neutral
-- The core tradeoff: Build custom (full control, matches token system) vs. wrap Radix/Floating UI (faster, battle-tested positioning)
-- Precedent: Most mature design systems (Chakra, Radix, MUI) use Floating UI for positioning math
-- Constraint: Must work within existing z-index token scale
-- Recommendation: Proceed with caution — scope to 4 positions (top/right/bottom/left) for MVP, defer edge cases
+- The choice is three-way: native (Popover API plus anchor positioning: least code, newest support), library (Floating UI: mature collision handling, adds a dependency), or custom positioning (full control, most maintenance)
+- The deciding constraint is your oldest supported browser: if it predates anchor positioning, use the library or native with a fallback
+**Recommendation:** Proceed with caution — ship top/right/bottom/left placements with the 1.4.13 behaviors first, and pick native vs. library once browser support is confirmed
 ```
+
+Browser-support dates come from MDN (Popover API) and web.dev (anchor positioning). Recheck them before reusing this example; Baseline status changes, and some anchor-positioning properties reached Baseline later than the core feature.
 
 ---
 
@@ -250,7 +271,7 @@ If your setup has a persistent memory tool (an MCP memory server or similar), re
 
 Before running the three perspectives, search memory for prior advisories on the same decision topic (e.g. query: `perspectives <decision-topic> <component-or-system>`).
 
-If a prior advisory exists, **lead with it.** State the prior recommendation, ask whether the constraints have changed, and only re-run the three perspectives if there's new information. Council memory > re-derivation.
+If a prior advisory exists, **lead with it.** State the prior recommendation, ask whether the constraints have changed, and only re-run the three perspectives if there's new information. A prior advisory with unchanged constraints beats re-deriving one.
 
 ### Remember after
 
@@ -264,7 +285,7 @@ At the end of every advisory run (regardless of recommendation), save the verdic
     skill: "design-system-perspectives",
     project: "<project>",
     decision_topic: "<topic>",
-    recommendation: "proceed" | "proceed-with-caution" | "block" | "defer",
+    recommendation: "proceed" | "proceed-with-caution" | "needs-discussion" | "defer",
     positive: "<one line>",
     negative: "<one line>",
     neutral: "<one line>",
@@ -275,4 +296,4 @@ At the end of every advisory run (regardless of recommendation), save the verdic
 }
 ```
 
-Always remember — even "block" and "defer" verdicts are valuable for future decisions. Especially remember when an advisory is overturned later (capture *why* the constraints changed).
+Save "defer" and "needs-discussion" verdicts too; they are valuable for future decisions. Especially save when an advisory is overturned later, and capture *why* the constraints changed.

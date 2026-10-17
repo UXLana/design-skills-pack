@@ -1,45 +1,53 @@
 # Icon Standards Reference
 
+The defaults follow Lucide's published icon design guide (lucide.dev): a 24×24 canvas, 2px strokes, round caps and joins. If the repo's existing icons use different values, match the repo.
+
 ## Visual Grid
 
 ```
 ┌────────────────────────┐
-│  ·  ·  ·  ·  ·  ·  ·  │  2px padding
+│  1px minimum padding   │  stroke edges stay at least 1px inside the canvas
 │  ┌──────────────────┐  │
 │  │                  │  │
-│  │    ACTIVE AREA   │  │  20x20 active area
-│  │      20x20       │  │
-│  │                  │  │
+│  │   LIVE AREA      │  │  with a 2px stroke, path coordinates stay within 2–22
+│  │   (20×20 for     │  │  (1px padding + 1px half-stroke on each side)
+│  │    coordinates)  │  │
 │  └──────────────────┘  │
-│  ·  ·  ·  ·  ·  ·  ·  │  2px padding
+│                        │
 └────────────────────────┘
-        24x24 viewBox
+        24×24 viewBox
 ```
 
 ## Stroke Specifications
 
 | Property | Value | Notes |
 |----------|-------|-------|
-| Default weight | 1.5px | Standard for all icons |
-| Min weight | 1px | For delicate details |
-| Max weight | 2.5px | For bold emphasis |
-| Line cap | round | `strokeLinecap="round"` |
+| Default weight | 2px | Lucide default; match the repo if its set uses 1.5px |
+| Allowed range | 1.5–2.5px | Use one weight across the whole set |
+| Line cap | round | `strokeLinecap="round"` (open paths) |
 | Line join | round | `strokeLinejoin="round"` |
 | Miter limit | N/A | Not used with round joins |
+
+## Corners and Spacing
+
+| Rule | Value |
+|------|-------|
+| Corner radius, shapes 8px or larger | 2px |
+| Corner radius, shapes smaller than 8px | 1px |
+| Minimum gap between distinct elements | 2px |
 
 ## Color Usage
 
 ```tsx
-// Always use currentColor for inheritance
-stroke="currentColor"
+<>
+  {/* Always currentColor, so the icon inherits the surrounding text color */}
+  <path stroke="currentColor" d="M5 12h14" />
 
-// For subtle fills (use sparingly)
-fill="currentColor"
-fillOpacity="0.2"  // Max 30% opacity
+  {/* Subtle fills only, used sparingly, at most 0.3 opacity */}
+  <rect x="4" y="4" width="16" height="16" rx="2" fill="currentColor" fillOpacity={0.2} />
 
-// Never use hardcoded colors
-// BAD: stroke="#2563EB"
-// GOOD: stroke="currentColor"
+  {/* Never a raw color such as stroke="#2563EB": it ignores themes, dark mode, and forced colors */}
+</>
 ```
 
 ## SVG Structure
@@ -54,7 +62,7 @@ fillOpacity="0.2"  // Max 30% opacity
   viewBox="0 0 24 24"
   fill="none"
   stroke="currentColor"
-  stroke-width="1.5"
+  stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
 >
@@ -89,6 +97,18 @@ fillOpacity="0.2"  // Max 30% opacity
 <path d="M12 2v20" />
 ```
 
+## Filled Variant Construction
+
+The closed-shapes rule in SKILL.md, step by step:
+
+1. **Start from the outline's outer edge.** The stroke adds half its width on each side, so a 2px stroke around a shape with a 2px corner radius gives a filled shape 1px larger on every side with a 3px corner.
+2. **Close every shape.** Each filled subpath ends in `Z` or is a `rect`/`circle`. Open strokes (lines, arcs, the open top of a box) are redrawn as closed shapes or dropped.
+3. **Cut details out.** Interior lines (a slot, a fold, a check mark inside a circle) become knockout subpaths in the same `<path>` with `fill-rule="evenodd"` (`fillRule="evenodd"` in JSX). Keep knockouts at least 2px wide so they survive at 16px.
+4. **Keep the 2px gap** between parts that are separate in the outline.
+5. **Compare at 16px and 24px** side by side with the outline: same footprint, similar visual weight.
+
+See `examples.md` for a worked archive icon.
+
 ## Optical Alignment
 
 Icons should be optically centered, not mathematically centered.
@@ -96,7 +116,7 @@ Icons should be optically centered, not mathematically centered.
 ### Weight Distribution
 - Heavier elements should sit slightly lower
 - Pointed elements (arrows) can extend slightly beyond grid
-- Circular icons should touch all edges of active area
+- Circular icons should touch all edges of the live area
 
 ### Example: Chevron
 ```
@@ -120,31 +140,13 @@ Optical center: Shifted slightly toward the point direction
 - Use simple primitives (line, circle, rect) when possible
 - Combine connected paths into single elements
 - Round coordinates to whole numbers or .5
+- Run SVGO on anything exported from a design tool (config in SKILL.md)
 
 ### Don't
 - Use paths with excessive anchor points
 - Include invisible elements
 - Add unnecessary precision (3+ decimal places)
 
-## Existing Icon Reference
+## Matching the Existing Set
 
-List the icons already in your design system here so new icons match their style. Example:
-
-### Navigation Icons
-- `IconColors` - Half-filled circle representing color system
-- `IconTypography` - "T" with horizontal lines
-- `IconSpacing` - Grid pattern
-- `IconRadius` - Corner brackets
-- `IconShadows` - Layered rectangles with offset
-- `IconBreakpoints` - Monitor with stand
-
-### Component Icons
-- `IconAvatar` - User silhouette
-- `IconButton` - Rounded rectangle with horizontal line
-- `IconTab` - Horizontal lines with highlighted section
-- `IconBanner` - Rectangle with text lines
-
-### Utility Icons
-- `IconChevron` - Rotatable arrow
-- `IconFoundations` - Stacked layers (3D)
-- `IconComponents` - 2x2 grid of squares
+Before drawing, collect the repo's existing icons (format in `existing-icons.md`) and compare a few of them for stroke width, corner radius, and how much of the live area they fill. Match those, even where they differ from the defaults above.

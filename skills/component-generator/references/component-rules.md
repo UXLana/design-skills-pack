@@ -1,6 +1,49 @@
 # Component Rules — Canonical Patterns
 
-## forwardRef Pattern
+## Contents
+
+- Ref Pattern (React 19 default, React 18 variant)
+- State Management (CSS-first, status enum, prop gating, controlled/uncontrolled)
+- Focus Ring Pattern
+- Dark Mode
+- Keyboard Interaction Patterns
+- Modal Dialogs (native `<dialog>`)
+- Compound Component Pattern
+- Collection Rendering Pattern
+- Variant & Size Config Pattern
+- Hidden Native Input Pattern
+- Async Status Announcements
+- Drag-and-Drop Pattern (drop zone, sortable list with keyboard reorder)
+
+## Ref Pattern
+
+Check the `react` version in `package.json` first (`peerDependencies` for a library). The default below is React 19.
+
+### React 19+ (default): ref is a prop
+
+`ComponentProps<'button'>` already includes `ref`, so destructure it and pass it to the root element. No wrapper and no `displayName` are needed.
+
+```tsx
+import type { ComponentProps } from 'react'
+
+interface ButtonProps extends ComponentProps<'button'> {
+  variant?: 'primary' | 'secondary'
+}
+
+function Button({ variant = 'primary', type = 'button', ref, children, ...rest }: ButtonProps) {
+  return (
+    <button ref={ref} type={type} data-variant={variant} {...rest}>
+      {children}
+    </button>
+  )
+}
+export { Button }
+export type { ButtonProps }
+```
+
+### React 18: forwardRef
+
+When the repo's `react` peer dependency is 18, change three things: wrap the component in `forwardRef`, type props with `ComponentPropsWithoutRef<'button'>` (the ref arrives as `forwardRef`'s second argument, not in props), and set `displayName`.
 
 ```tsx
 import { forwardRef, type ComponentPropsWithoutRef } from 'react'
@@ -10,16 +53,31 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', children, ...rest }, ref) => (
-    <button ref={ref} type="button" {...rest}>
+  ({ variant = 'primary', type = 'button', children, ...rest }, ref) => (
+    <button ref={ref} type={type} data-variant={variant} {...rest}>
       {children}
     </button>
   )
 )
 Button.displayName = 'Button'
-export { Button }
-export type { ButtonProps }
 ```
+
+A library that supports both 18 and 19 should keep the `forwardRef` form until it drops 18; it still works on 19.
+
+### Internal ref plus consumer ref
+
+When the component needs its own handle on the node (to call `showModal()`, measure, or focus), keep an internal `useRef` and expose the node to the consumer with `useImperativeHandle`. This works for object refs and callback refs on both versions:
+
+```tsx
+const dialogRef = useRef<HTMLDialogElement>(null)
+useImperativeHandle(ref, () => dialogRef.current!, [])
+```
+
+Don't cast the incoming ref to `RefObject` and use it directly; a consumer who passes a callback ref will break.
+
+### Typing refs passed to hooks
+
+Type hook parameters that receive a ref as `RefObject<HTMLElement | null>`. On React 19, `useRef<T>(null)` returns `RefObject<T | null>`, which a `RefObject<HTMLElement>` parameter rejects; the `| null` form works on 18 and 19.
 
 ## State Management
 
@@ -194,9 +252,10 @@ When arrow-key navigation highlights an option in a scrollable list, scroll it i
 
 ```tsx
 useEffect(() => {
-  if (activeIndex < 0 || !listRef.current) return
-  const el = listRef.current.querySelector(`#${getOptionId(activeIndex)}`)
-  el?.scrollIntoView({ block: 'nearest' })
+  if (activeIndex < 0) return
+  // getElementById, not querySelector(`#${id}`): ids from useId can contain characters
+  // that are not valid in a CSS selector, and querySelector throws on them.
+  document.getElementById(getOptionId(activeIndex))?.scrollIntoView({ block: 'nearest' })
 }, [activeIndex])
 ```
 
@@ -212,28 +271,25 @@ const handleBlur = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
 
 Set `autoComplete="off"` on combobox/autocomplete inputs to suppress browser autocomplete interference.
 
-## Focus Trap (Modals & Dialogs)
+## Modal Dialogs (native `<dialog>`)
 
-```tsx
-function useFocusTrap(ref: React.RefObject<HTMLElement>, active: boolean) {
-  useEffect(() => {
-    if (!active || !ref.current) return
-    const el = ref.current
-    const focusable = el.querySelectorAll<HTMLElement>(
-      'a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex="-1"])'
-    )
-    const first = focusable[0], last = focusable[focusable.length - 1]
-    const trap = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return
-      if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last?.focus() } }
-      else { if (document.activeElement === last) { e.preventDefault(); first?.focus() } }
-    }
-    el.addEventListener('keydown', trap)
-    first?.focus()
-    return () => el.removeEventListener('keydown', trap)
-  }, [active, ref])
-}
-```
+Build modals on the native `<dialog>` element opened with `showModal()` rather than a hand-rolled focus trap. The browser then provides what a hand-rolled version usually gets wrong:
+
+- the rest of the page becomes inert (not focusable, not clickable, hidden from assistive technology), so focus can't escape;
+- Escape closes the dialog (it fires `cancel`, then `close`);
+- the dialog renders in the top layer, so it needs no portal and no z-index;
+- the dialog role and `aria-modal="true"` are implicit.
+
+You still add four things:
+
+1. **A label.** Generate the title id with `useId()` and point `aria-labelledby` at it. A hardcoded id collides as soon as two dialogs exist on a page.
+2. **Focus return.** Remember `document.activeElement` before `showModal()` and focus it again after closing, if it is still on the page.
+3. **State sync.** Listen for the dialog's `close` event (React `onClose`) and call the consumer's `onClose`, so Escape and backdrop clicks keep the `isOpen` prop in step.
+4. **A visible close button**, and a sensible first focus (`autoFocus` on the primary field or the close button).
+
+Optional: background scroll lock (`showModal()` doesn't stop the page behind from scrolling) and backdrop-click close. Style the backdrop with the `::backdrop` pseudo-element, which needs a stylesheet, not an inline style. See Template C in `component-templates.md` for the full component.
+
+Reserve a hand-written focus trap for non-dialog surfaces that truly must hold focus, and type its ref parameter as `RefObject<HTMLElement | null>`.
 
 ## Compound Component Pattern (Shared State)
 
@@ -305,16 +361,18 @@ Centralize variant/size styles in typed config objects instead of inline ternari
 
 ```tsx
 const sizeConfig: Record<Size, { height: string; padding: string; fontSize: string }> = {
-  sm: { height: '32px', padding: spacing[2], fontSize: typography.size.sm },
-  md: { height: '40px', padding: spacing[3], fontSize: typography.size.md },
-  lg: { height: '48px', padding: spacing[4], fontSize: typography.size.lg },
+  sm: { height: sizing.control.sm, padding: spacing[2], fontSize: typography.size.sm },
+  md: { height: sizing.control.md, padding: spacing[3], fontSize: typography.size.md },
+  lg: { height: sizing.control.lg, padding: spacing[4], fontSize: typography.size.lg },
 }
 
 const variantConfig: Record<Variant, { bg: string; color: string; border: string }> = {
   primary: { bg: colors.brand.primary, color: colors.text.inverse, border: 'none' },
-  secondary: { bg: 'transparent', color: colors.brand.primary, border: `1px solid ${colors.brand.primary}` },
+  secondary: { bg: 'transparent', color: colors.brand.primary, border: `${borderWidth.thin} solid ${colors.brand.primary}` },
 }
 ```
+
+Every size, border width, opacity, and z-index comes from a token, including the ones that look too small to matter (a `1px` border, a `0.5` disabled opacity). If the token file has no match, use the closest token and flag the gap, or comment the value as a temporary exception (see Token Compliance in SKILL.md).
 
 ### Component & Icon Mapping
 
@@ -339,21 +397,26 @@ This replaces chains of `if`/`switch` in JSX and keeps rendering declarative.
 For custom-styled file inputs, color pickers, or other native inputs that need non-native UI:
 
 ```tsx
-const inputRef = useRef<HTMLInputElement>(null)
-
-<input
-  ref={inputRef}
-  type="file"
-  accept={accept}
-  multiple={multiple}
-  onChange={handleChange}
-  style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}
-  tabIndex={-1}
-  aria-hidden
-/>
-<Button onClick={() => inputRef.current?.click()}>
-  Choose file
-</Button>
+function FilePicker({ accept, multiple, onChange }: Pick<ComponentProps<'input'>, 'accept' | 'multiple' | 'onChange'>) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        onChange={onChange}
+        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+      <Button onClick={() => inputRef.current?.click()}>
+        Choose file
+      </Button>
+    </>
+  )
+}
 ```
 
 The visible trigger must be keyboard-accessible. The hidden input handles native behavior (file picker dialog, validation). Associate a visible label with the trigger button, not the hidden input.
@@ -396,6 +459,53 @@ Always provide a non-drag alternative (e.g., a file input button within the drop
 
 ### Sortable List (Drag Reorder)
 
+Pointer drag is the enhancement; the keyboard path is the requirement. Every reorderable item gets "Move up" and "Move down" buttons (or Alt+Arrow shortcuts on the item, documented in its description), and each move is announced in a polite live region. Don't use `aria-grabbed` or `aria-dropeffect`: both were deprecated in WAI-ARIA 1.1, so the buttons and the announcement have to carry the meaning.
+
+```tsx
+function moveItem<T>(items: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= items.length || from === to) return items
+  const next = [...items]
+  const [moved] = next.splice(from, 1)
+  next.splice(to, 0, moved)
+  return next
+}
+
+interface SortableItem { id: string; label: string }
+
+function SortableList({ items, onReorder }: { items: SortableItem[]; onReorder: (next: SortableItem[]) => void }) {
+  const [announcement, setAnnouncement] = useState('')
+
+  const move = (from: number, to: number) => {
+    const next = moveItem(items, from, to)
+    if (next === items) return
+    onReorder(next)
+    setAnnouncement(`${items[from].label} moved to position ${to + 1} of ${items.length}`)
+  }
+
+  return (
+    <>
+      <ul>
+        {items.map((item, i) => (
+          <li key={item.id}>
+            {item.label}
+            {/* aria-disabled, not disabled: a disabled button drops focus when the item reaches the end */}
+            <button type="button" aria-label={`Move ${item.label} up`} aria-disabled={i === 0} onClick={() => move(i, i - 1)}>
+              <IconChevronUp />
+            </button>
+            <button type="button" aria-label={`Move ${item.label} down`} aria-disabled={i === items.length - 1} onClick={() => move(i, i + 1)}>
+              <IconChevronDown />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">{announcement}</div>
+    </>
+  )
+}
+```
+
+Stable `key`s keep the focused button attached to its item as the list re-renders, so focus travels with the moved item. Add pointer drag on top with a hook like the one below, and let both paths call the same `moveItem`.
+
 ```tsx
 function useSortable<T>(initialItems: T[]) {
   const [items, setItems] = useState(initialItems)
@@ -418,5 +528,3 @@ function useSortable<T>(initialItems: T[]) {
   return { items, onDragStart, onDragOver, onDragEnd, dragIndex }
 }
 ```
-
-Provide `aria-grabbed`, `aria-dropeffect` (or the newer `aria-roledescription` approach), and keyboard reorder support (e.g., Alt+Arrow) for accessible reordering.

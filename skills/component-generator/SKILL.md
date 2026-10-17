@@ -1,6 +1,6 @@
 ---
 name: component-generator
-description: Create production-ready React components for the active design system using atomic design principles. Use this skill when building new UI components like buttons, inputs, cards, modals, etc. Generates TypeScript components that build on existing primitives. After creating a component, integrates it with your design system's conventions (exports, docs, inventory).
+description: Build production-ready React and TypeScript components for a design system. It audits what already exists, composes from existing atoms, uses design tokens only, and ships accessible (WCAG 2.2 AA) semantics, keyboard support, ref handling and React 19 / Server Component boundaries, then exports the component and adds its docs page or story. Use whenever someone asks to create, add, scaffold or rebuild a design-system component, for example "make a Tooltip component", "we need a Combobox", "add a Modal to the design system", "build this Figma component in code" or "turn this into a reusable component", even if they never say "design system". Covers atoms through organisms (buttons, inputs, selects, tabs, cards, modals, uploads). Not for icons (icon-generator), visual polish of an existing docs page (design-system-ui), new themes or token values (theme-generator, brand-tokens-translator), auditing hardcoded values (token-audit), or one-off screens in a product app.
 ---
 
 # Component Generator
@@ -10,8 +10,8 @@ Create production-ready React components using atomic design, strict token compl
 ## Source-of-Truth Hierarchy
 
 1. **Filesystem** (`/components/`, `/components/index.ts`) — authoritative for what exists
-2. **`references/component-inventory.md`** — quick-reference index; update after every creation
-3. **`references/component-rules.md`** — canonical patterns (forwardRef, state, focus, ARIA, keyboard, dark mode, compound state, collections, drag-and-drop)
+2. **The component inventory** — rebuilt from the barrel export (`/components/index.ts`) at the start of every run, or read from the repo's own inventory doc if it keeps one. It lives in the user's repo, never in this skill's folder: the skill is shared by every repo it runs in, so anything written here would leak one project's components into the next. `references/component-inventory.md` is only the format to use.
+3. **`references/component-rules.md`** — canonical patterns (refs, state, focus, ARIA, keyboard, dark mode, compound state, collections, native dialogs, drag-and-drop)
 4. **`references/component-templates.md`** — starter templates and composition examples
 
 When conflicts arise, higher-numbered sources defer to lower-numbered sources.
@@ -33,12 +33,13 @@ Internal sub-parts of a component do not each need their own public atomic class
 
 ### 1. Audit
 
-Check `/components/index.ts` and `/components/` for existing primitives.
+Check `/components/index.ts` and `/components/` for existing primitives. List the barrel's exports to build the inventory for this run (or read the repo's inventory doc if it has one).
 
 - Does this component or a close equivalent already exist?
 - Can it be composed from existing components?
 - What required atoms are missing? List them for step 2.
-- Is there an existing shared icon component or icon library? Prefer it over inline SVGs. If none exists and the component needs icons, create a minimal `Icon` atom or co-locate SVGs as named components.
+- Which React version does the repo target? Read `react` in `package.json` (`peerDependencies` for a component library, `dependencies` for an app). 19 or later: use the templates as written (ref is a regular prop). 18: use the React 18 variant in `references/component-rules.md` (`forwardRef`).
+- Does the component need icons? Use the repo's existing icon set or icon library. If an icon is missing, hand that icon to the icon-generator skill instead of drawing an inline SVG here, so the icon set stays the single home for icons.
 
 ### 2. Create Missing Atoms
 
@@ -70,12 +71,20 @@ Follow the [Integration Checklist](#integration-checklist), then follow your des
    export { ComponentName } from './ComponentName'
    export type { ComponentNameProps } from './ComponentName'
    ```
-2. Add to your docs site's navigation config (e.g. a `navSections` list), if it has one
 
-**Documentation (required after code integration):**
+**Documentation (required, in whatever form the repo already uses):**
 
-3. Create a documentation page using your docs app's page layout (e.g. `/app/components/component-name/page.tsx`)
-4. Update `references/component-inventory.md`
+2. Match the repo's docs setup. Look for what neighboring components have and copy that:
+   - **Storybook** (`.storybook/`, `*.stories.tsx`): add `ComponentName.stories.tsx` with one story per variant and state (default, disabled, loading, error, on dark).
+   - **MDX docs** (`*.mdx` pages): add an MDX page with usage, props table, and accessibility notes.
+   - **A docs app** (e.g. `/app/components/component-name/page.tsx`): add a page with the app's layout, and add it to the nav config (e.g. a `navSections` list) if there is one.
+3. If the repo keeps an inventory doc, add the component to it in the format of `references/component-inventory.md`. Don't write the inventory into this skill's folder.
+
+**Verify (required before calling it done):**
+
+4. Run the repo's type-check and existing tests.
+5. Add a test in the repo's runner covering render, keyboard interaction, and an automated axe check (`jest-axe` / `vitest-axe` for unit tests, `@axe-core/playwright` for browser tests, or Storybook's a11y addon, whichever the repo already has). Axe catches only part of WCAG, so it supplements the manual checks rather than replacing them.
+6. Hand off when those skills are installed: **design-accessibility** for a WCAG 2.2 AA audit of the new component, and **visual-qa** for screenshots of each state at desktop and mobile widths. If they aren't installed, list the manual checks you did (keyboard path, focus visibility, screen reader name and state).
 
 ## File Structure
 
@@ -142,7 +151,7 @@ Keep hooks private to the component folder unless intentionally reusable across 
 
 ### Semantic HTML
 
-Use the correct element: `<button>` for actions, `<a>` for navigation, `<input>` for form fields. Use ARIA roles only when no native element provides the needed semantics — do not add roles/states that duplicate native semantics (e.g., `role="button"` on `<button>`). Extend the matching HTML attributes interface (e.g., `ButtonHTMLAttributes`, `InputHTMLAttributes`). When your custom props collide with native HTML attribute names (common: `value`, `defaultValue`, `onChange`, `onSelect`, `size`), omit the conflicting native props: `Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'size'>`.
+Use the correct element: `<button>` for actions, `<a>` for navigation, `<input>` for form fields. Use ARIA roles only when no native element provides the needed semantics — do not add roles/states that duplicate native semantics (e.g., `role="button"` on `<button>`). Extend the element's props type: `ComponentProps<'button'>`, `ComponentProps<'input'>` and so on (on React 19 this includes `ref`; on React 18 use `ComponentPropsWithoutRef<'button'>` with `forwardRef`). When your custom props collide with native HTML attribute names (common: `value`, `defaultValue`, `onChange`, `onSelect`, `size`), omit the conflicting native props: `Omit<ComponentProps<'input'>, 'value' | 'onChange' | 'size'>`. Omit only real collisions; omitting `type` from a button, for example, stops consumers from making a submit button.
 
 Do not introduce polymorphic `as`/`asChild` APIs unless the repository already uses them or the request explicitly requires them. Prefer a single semantic root element by default.
 
@@ -151,7 +160,7 @@ Do not introduce polymorphic `as`/`asChild` APIs unless the repository already u
 - Use `<a>` (or the framework's `Link` component) for navigation. Do not use `<button>` for route changes.
 - Do not use the `disabled` attribute on anchors (it is not a valid HTML attribute for `<a>`).
 - If a link must appear unavailable: omit `href`, set `aria-disabled="true"`, optionally set `tabIndex={-1}` to remove from tab order, and prevent navigation via `e.preventDefault()` in the click handler. Apply visual disabled styling.
-- Extend `AnchorHTMLAttributes<HTMLAnchorElement>` for link component props.
+- Extend `ComponentProps<'a'>` for link component props.
 
 ### Disabled State
 
@@ -183,13 +192,19 @@ For form components, support `id`, `name`, `aria-describedby`, and `aria-errorme
 - Use `aria-errormessage` to reference visible error text only when `aria-invalid={true}`.
 - Merge consumer-provided `aria-describedby` with generated IDs — see `references/component-templates.md` for the pattern.
 
-### Ref Forwarding
+### Refs
 
-Default to `forwardRef` for public leaf components that render a meaningful DOM node consumers may need to focus, measure, or integrate with. Wrapper/provider/namespace-only components are exempt. See `references/component-rules.md` for the pattern.
+Give public leaf components that render a meaningful DOM node (one consumers may need to focus, measure, or integrate with) a ref to that node. Wrapper/provider/namespace-only components are exempt.
+
+- **React 19+ (default):** `ref` is a regular prop. It is already part of `ComponentProps<'button'>`; destructure it and pass it to the root element. No wrapper is needed, and React's docs say `forwardRef` will be deprecated in a future release.
+- **React 18:** wrap the component in `forwardRef` and type props with `ComponentPropsWithoutRef<'button'>`.
+- When the component also needs its own ref to the same node (a dialog, a measured popover), keep an internal `useRef` and expose it with `useImperativeHandle(ref, () => internalRef.current!)`. Casting the incoming ref to `RefObject` breaks consumers who pass a callback ref.
+
+Type any hook parameter that receives a ref as `RefObject<HTMLElement | null>`. On React 19, `useRef<T>(null)` returns `RefObject<T | null>`, so a parameter typed `RefObject<HTMLElement>` no longer accepts it. The `| null` form type-checks on 18 and 19. See `references/component-rules.md` for both patterns.
 
 ### `displayName`
 
-Set `displayName` on components that use `forwardRef` or are wrapped in HOCs (React DevTools cannot infer the name). Plain named function components do not need it.
+Set `displayName` on components wrapped in `forwardRef` (React 18), `memo`, or other HOCs, because React DevTools cannot infer the name through the wrapper. Plain named function components, including React 19 components that take `ref` as a prop, do not need it.
 
 ### Keyboard Navigation
 
@@ -225,87 +240,32 @@ Apply per file, not per component tree. A server component may render client chi
 
 ### Button `type` Attribute
 
-Always default `type` to `'button'` on `<button>` elements to prevent accidental form submission. Only use `type="submit"` when the button is explicitly intended to submit a form.
+Always default `type` to `'button'` on `<button>` elements to prevent accidental form submission, and keep `type` in the props so a consumer can pass `type="submit"` when the button is meant to submit a form.
 
 ---
 
 ## Memory (optional)
 
-If your setup has a persistent memory tool (an MCP memory server or similar), recall prior generations of the same or similar component before starting, and save a structured record of the work afterward.
-
-### Recall first
-
-Before generating, search memory for prior generations of the same or similar component (e.g. query: `component-generator <ComponentName> design system`).
-
-Pull any prior API decisions, breaking changes, advisor perspectives, or known issues. If a prior generation exists for the same component, **start from it** — don't re-derive a fresh API. Validate that the prior mappings still hold against the current design system; only regenerate what changed.
-
-### Remember after
-
-At the end of every component generation, save a structured entry so future runs and related skills (such as design-system-perspectives) can recall the work:
-
-```
-{
-  content: "Generated <ComponentName>: <one-line summary of API + variants>. Used tokens: <list>. Advisor verdicts: <if applicable>.",
-  tags: ["component-generator", "<component-name>", "<project>"],
-  metadata: {
-    skill: "component-generator",
-    project: "<project>",
-    component: "<ComponentName>",
-    action: "generated" | "regenerated" | "updated",
-    api_summary: "<props/variants summary>",
-    tokens_used: ["color.brand.primary", "spacing.md", "..."],
-    variants: ["primary", "secondary", "ghost"],
-    a11y_notes: "<aria patterns, focus management, keyboard interaction>",
-    files_created: ["..."],
-    files_modified: ["..."],
-    breaking_change_notes: "<if applicable>",
-    generated_date: "<ISO date>",
-    verdict: "pending"
-  }
-}
-```
-
-`verdict: 'pending'` is the default — after review, label the entry `correct`, `partial`, or `wrong`, plus an `error_category` from the locked taxonomy below.
-
-### Error taxonomy
-
-When labeling a wrong generation, pick from this fixed taxonomy so failure modes can be counted:
-
-- `api-conflict` — proposed API conflicts with existing component
-- `wrong-tokens` — references nonexistent or wrong design tokens
-- `missing-variant` — variant model incomplete
-- `accessibility-gap` — generated component fails WCAG
-- `over-engineered` — too many props for the actual need
-- `under-specced` — missing critical functionality
-
-Add new categories only by editing this SKILL.md, so the list stays stable for counting and error analysis.
-
-### Correctness metric
-
-The single objective metric this skill is evaluated against:
-
-> **% of generated components that ship without major revision in week 1.**
-
-Ground truth: a manual review label plus an automatic git-diff check 7 days post-generation. Once 30–50 labels exist, use them to tune this SKILL.md against the metric.
+If your setup has a persistent memory tool, search it before starting for earlier work on this component (prior API decisions, breaking changes, known issues) and start from what it finds rather than re-deriving the API; check those decisions still match the current code.
+After the component ships, save a short summary: component name, props and variants, tokens used, accessibility patterns, files touched, and any breaking change.
+Without a memory tool, skip this section; the repo and its git history are the record.
 
 ## Honesty Output Protocol — Interrupt on High-Stakes Unknowns
 
-Before generating `.tsx`, enumerate what you know about the component vs. what you're inferring.
+Before generating `.tsx`, list what you know about the component vs. what you're inferring.
 
 For each unknown, classify stakes:
 
-- **high** — guessing wrong produces incorrect API, wrong token usage, broken composition with existing components, or missing a11y. Examples: "is this an atom or molecule given the existing inventory?", "does the requested prop conflict with a similar one elsewhere?", "should this use forwardRef or not given the parent patterns?", "is this token name current in the active DS or stale?"
-- **low** — internal variable naming, comment style, ordering of optional props. Decide, log, move on.
+- **high** — a wrong guess would ship a public API that is costly to reverse and that the repo can't settle. Examples: the requested prop name or meaning conflicts with an existing component's API; the design calls for a token that doesn't exist in the token file; it's unclear whether the request extends an existing component or adds a new one.
+- **low** — anything the repo already answers by convention (follow the neighboring components), plus internal variable naming, comment style, and ordering of optional props. Decide, note the assumption in your summary, move on.
 
-If any unknown is `high`, **stop**. Append to `_design_task.md` under `honesty.pending_questions`, ask the user, wait. Do not emit `.tsx` until resolved — a wrong component goes into the codebase and propagates.
-
-Schema appended to `_design_task.md`:
+If any unknown is `high`, stop and ask the user before writing `.tsx`, because a wrong component gets imported and copied before anyone notices. Ask in chat. If the repo has a `_design_task.md` at its root (a shared task log that other design-system skills, such as design-system-perspectives, read and write), also record the question there under `honesty.pending_questions`:
 
 ```yaml
 honesty:
   agent: component-generator
   assumptions:
-    - "Used forwardRef per components/button/Button.tsx convention"
+    - "Ref passed as a regular prop (react peer dependency is ^19)"
   resolved_questions:
     - q: "Should size='sm' be added or stay md/lg only?"
       asked_at: 2026-05-14T15:50Z
@@ -314,4 +274,4 @@ honesty:
   pending_questions: []
 ```
 
-Special rule for component-generator: any unknown about **prop signatures, token mappings, accessibility patterns, or atomic classification** is automatically `high`. These choices are hard to reverse once shipped.
+Don't create `_design_task.md` just to log a question; asking in chat is enough.

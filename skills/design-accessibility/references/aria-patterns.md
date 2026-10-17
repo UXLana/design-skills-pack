@@ -1,5 +1,7 @@
 # ARIA & Semantic HTML
 
+**Contents:** First Rule of ARIA · Semantic HTML Mapping · Required ARIA Attributes · Component Patterns (Button, Dialog, Tabs, Accordion, Combobox, Alert/Toast, Progress) · Live Regions · Hidden Content · Issue Templates · Additional Component Patterns (Tooltip, Menu Button, Popover, Switch, Date Picker, File Upload, DataTable, Toasts, Pagination, Breadcrumbs) · Testing
+
 ## First Rule of ARIA
 
 > Don't use ARIA if you can use native HTML
@@ -88,16 +90,22 @@ Every interactive element needs an accessible name:
 
 ### Dialog/Modal
 ```tsx
-<div
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="dialog-title"
-  aria-describedby="dialog-description"
->
+// ✓ Preferred: native <dialog>, opened with ref.current.showModal()
+// Role and aria-modal are implicit; the page behind becomes inert; Escape closes it.
+<dialog ref={dialogRef} aria-labelledby="dialog-title" aria-describedby="dialog-description">
   <h2 id="dialog-title">Confirm Action</h2>
   <p id="dialog-description">Are you sure you want to proceed?</p>
-  <button>Cancel</button>
-  <button>Confirm</button>
+  <form method="dialog">
+    <button>Cancel</button>
+    <button value="confirm">Confirm</button>
+  </form>
+</dialog>
+
+// Fallback for a custom overlay: explicit role + aria-modal, and set `inert`
+// on everything outside the overlay while it is open (see keyboard.md)
+<div role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+  <h2 id="dialog-title">Confirm Action</h2>
+  {/* … */}
 </div>
 ```
 
@@ -345,7 +353,7 @@ Use semantic element or add complete ARIA/keyboard support
 
 ## Additional Component Patterns
 
-These are the high-frequency patterns an auditor will hit in a real DS that weren't covered above. Each includes the minimum required semantics, keyboard behavior, and common audit failures.
+These are the high-frequency patterns an auditor will hit in a real design system that weren't covered above. Each includes the minimum required semantics, keyboard behavior, and common audit failures.
 
 ### Tooltip
 
@@ -425,7 +433,7 @@ These are the high-frequency patterns an auditor will hit in a real DS that were
 ### File Upload (including drag and drop)
 
 ```tsx
-<label htmlFor="upload">Upload manifest PDF</label>
+<label htmlFor="upload">Upload invoice (PDF)</label>
 <input
   id="upload"
   type="file"
@@ -444,7 +452,7 @@ These are the high-frequency patterns an auditor will hit in a real DS that were
 - **Sort buttons** inside `<th>` use `aria-sort="ascending" | "descending" | "none"` on the header cell (not the button).
 - **Column visibility toggle:** changes must announce ("3 columns shown, 2 hidden").
 - **Filter input** has a visible label and announces result count on change ("127 rows, filtered to 14").
-- **Row selection:** checkbox in each row has an `aria-label` that names the row ("Select row for lot LX24-...-1234"), not just "Select".
+- **Row selection:** checkbox in each row has an `aria-label` that names the row ("Select order 10482"), not just "Select".
 - **Pagination:** "Page 3 of 12" is in a live region; current page button has `aria-current="page"`.
 - **Virtualized tables:** must expose total row count via `aria-rowcount` and each rendered row's absolute index via `aria-rowindex`.
 
@@ -452,7 +460,7 @@ These are the high-frequency patterns an auditor will hit in a real DS that were
 
 - **Non-error toasts:** `role="status"` with `aria-live="polite"` — reported when AT is idle.
 - **Error/destructive toasts:** `role="alert"` with `aria-live="assertive"` — interrupts AT immediately.
-- **Timing (WCAG 2.2.1 Timing Adjustable):** auto-dismissing toasts must allow the user to extend or dismiss manually. Never auto-dismiss an error toast.
+- **Timing (WCAG 2.2.1 Timing Adjustable):** if a toast carries information or an action the user needs (an Undo, a link), its auto-dismiss is a time limit — let users turn it off, adjust it (to at least 10× the default) or extend it, or keep such toasts until dismissed. Never auto-dismiss an error toast.
 - **Queue:** multiple simultaneous toasts announce sequentially, not simultaneously.
 
 ### Pagination
@@ -477,8 +485,8 @@ These are the high-frequency patterns an auditor will hit in a real DS that were
 <nav aria-label="Breadcrumb">
   <ol>
     <li><a href="/">Home</a></li>
-    <li><a href="/packages">Packages</a></li>
-    <li aria-current="page">C12-0000-1234</li>
+    <li><a href="/orders">Orders</a></li>
+    <li aria-current="page">Order 10482</li>
   </ol>
 </nav>
 ```

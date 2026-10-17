@@ -4,11 +4,20 @@
 
 | Content Type | Minimum Ratio | WCAG Criterion |
 |--------------|---------------|----------------|
-| Normal text (<18pt) | 4.5:1 | 1.4.3 AA |
-| Large text (≥18pt or ≥14pt bold) | 3:1 | 1.4.3 AA |
-| UI components (borders, icons) | 3:1 | 1.4.11 AA |
-| Focus indicators | 3:1 | 1.4.11 AA |
+| Normal text | 4.5:1 | 1.4.3 AA |
+| Large text (≥18pt / 24px, or ≥14pt / ≈18.66px bold) | 3:1 | 1.4.3 AA |
+| UI components (boundaries, icons, state indicators) | 3:1 against adjacent colors | 1.4.11 AA |
+| Focus indicators | 3:1 against the colors next to the indicator | 1.4.11 AA (with 2.4.7) |
 | Graphical objects | 3:1 | 1.4.11 AA |
+
+**Exempt:** text and boundaries of inactive (disabled) components, pure decoration, logotypes, and browser-default focus rings the author hasn't restyled (they must still be visible).
+
+## What Counts as a Pass
+
+- **The WCAG 2 contrast ratio is the only conformance test.** Compute it with the formula below from the colors the browser actually renders.
+- **Don't round.** The thresholds are hard: 4.499:1 fails 4.5:1. Report ratios truncated to two decimals.
+- **APCA is not part of WCAG 2.** It can help pick colors that read better (especially for dark themes and thin type), but report APCA results as `[Best Practice]`, never as a pass or fail.
+- **Test every theme and mode.** A pair that passes in light mode can fail in dark or high-contrast mode.
 
 ## Calculating Contrast
 
@@ -17,7 +26,8 @@
 function getLuminance(r: number, g: number, b: number): number {
   const [rs, gs, bs] = [r, g, b].map(c => {
     c = c / 255;
-    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    // WCAG 2.2 uses 0.04045 (older texts say 0.03928; the difference has no practical effect)
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   });
   return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
 }
@@ -98,9 +108,9 @@ const auditPairs: TokenPair[] = [
 
 ## Focus Indicator Requirements
 
-### Minimum Requirements (1.4.11)
+### Minimum Requirements (1.4.11 with 2.4.7)
 ```css
-/* Focus ring must have 3:1 contrast against adjacent colors */
+/* Draw focus with outline: it survives forced-colors mode, box-shadow does not */
 :focus-visible {
   outline: 2px solid var(--color-focus-ring);
   outline-offset: 2px;
@@ -108,18 +118,25 @@ const auditPairs: TokenPair[] = [
 ```
 
 ### Calculating Focus Contrast
-Focus indicator needs 3:1 contrast against:
-1. The component's background
-2. Adjacent pixels (the space around the component)
+Measure the indicator against the colors it actually touches, which depends on where it is drawn:
+
+| Indicator drawn… | Needs 3:1 against |
+|---|---|
+| Outside the component (outline with offset — the common case) | The surface the component sits on |
+| Inside the component | The component's own background |
+| On the component's border | Both the component background and the surface outside |
+| Partly inside, partly outside | Either part may provide the contrast |
 
 ```
-Component bg: #FFFFFF
-Page bg: #F5F5F5
-Focus ring: #005FCC
+Surface the button sits on: #F5F5F5
+Button background:          #FFFFFF
+Focus ring (2px, offset 2px, drawn outside): #005FCC
 
-Check: Focus ring vs Component bg = 5.2:1 ✓
-Check: Focus ring vs Page bg = 4.8:1 ✓
+Ring vs surface #F5F5F5 = 5.48:1 ✓  (the pair that counts for an outside ring)
+Ring vs button  #FFFFFF = 5.98:1 ✓  (only matters if the ring touches the button)
 ```
+
+1.4.11 does not require contrast between the focused and unfocused states; that is 2.4.13 Focus Appearance (AAA). A focus style that only changes a background color is out of scope for 1.4.11 but can fail 1.4.1 Use of Color.
 
 ## Issue Templates
 
@@ -132,7 +149,7 @@ Check: Focus ring vs Page bg = 4.8:1 ✓
 **Category:** Color & Contrast
 
 **Current State:**
-Text color `#767676` on background `#FFFFFF` has contrast ratio of 4.48:1
+Text color `#808080` on background `#FFFFFF` has a contrast ratio of 3.94:1
 
 **Required State:**
 Minimum 4.5:1 for normal text
@@ -140,10 +157,10 @@ Minimum 4.5:1 for normal text
 **Code Fix:**
 \`\`\`tsx
 // Before
-color: '#767676', // 4.48:1
+color: '#808080', // 3.94:1 — fails
 
-// After  
-color: '#757575', // 4.6:1
+// After
+color: '#767676', // 4.54:1 — passes; the lightest neutral gray that does (#777777 is 4.47:1)
 \`\`\`
 ```
 

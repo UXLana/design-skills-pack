@@ -4,7 +4,7 @@
 
 | Property | Value | Source | Status |
 |----------|-------|--------|--------|
-| Body text size | 16px (1rem) | Best practice (supports 1.4.4 scaling) | **DS requirement** — flag violations as `[DS Requirement]`, not WCAG |
+| Body text size | 16px (1rem) | Design-system default (no WCAG minimum size) | **DS requirement** — flag violations as `[DS Requirement]`, not WCAG |
 | Secondary text | 14px minimum | Best practice | **DS requirement** |
 | Line height (body) | 1.5 | 1.4.12 (AA) — **override survival**, not author default | Required that content **survives** this override; authors should set it as a DS default |
 | Paragraph spacing | 2× font size | 1.4.12 (AA) — override survival | Required to survive; best practice to ship as default |
@@ -13,16 +13,15 @@
 
 > **Important WCAG 1.4.12 clarification:** This criterion requires content to **remain functional when users apply these overrides** in their own stylesheet. It does **not** mandate that authors ship these values as defaults. For audit findings, cite 1.4.12 only when content *breaks under user override* — not when a DS happens to ship a tighter default.
 >
-> If your design system enforces these values as **DS defaults**, that exceeds the WCAG baseline — label findings `[DS Requirement]`, not `[WCAG 1.4.12 Violation]`.
+> If your design system enforces these values as **DS defaults**, that exceeds the WCAG baseline — label findings `[DS Requirement]`, not as 1.4.12 failures.
 
-## Status Label Legend
+## Source Labels
 
-Every typography audit finding must carry one of these labels:
+Use the source labels defined in SKILL.md ("Source Labels"). For typography that usually means:
 
-- **`[WCAG AA]`** — Fails an AA success criterion. Required for conformance. Must fix.
-- **`[WCAG AAA]`** — Fails AAA. Not required for AA conformance — include in findings but mark as optional in Standard mode, mandatory only if contract specifies AAA.
-- **`[DS Requirement]`** — Exceeds WCAG baseline; mandated by your design system (e.g. for government-contract consistency). Treat as blocking for DS compliance, but never claim it as a WCAG failure.
-- **`[Best Practice]`** — Not mandated anywhere; recommended guidance. Include only in Report mode or when asked.
+- **`[WCAG 2.0 AA]` / `[WCAG 2.1 AA]`** (or the compliance target's label) — text clips, overlaps or loses function at 200% (1.4.4), or under the spacing override (1.4.12).
+- **`[DS Requirement]`** — a size or line-height default your design system mandates (16px body, 14px minimum, 1.5 line height). Blocking for DS compliance, never claimed as a WCAG failure.
+- **`[Best Practice]`** — relative font units, reading-level guidance. Report mode, or when asked.
 
 ## Text Spacing Requirements (1.4.12)
 
@@ -37,6 +36,7 @@ margin-bottom: 2em; /* paragraph spacing */
 
 ### Token Audit Checklist
 ```typescript
+// Design-system minimums — label shortfalls [DS Requirement]
 const typographyAudit = {
   'text.body.sm': {
     minSize: 14,
@@ -67,20 +67,25 @@ const typographyAudit = {
 ## Text Scalability (1.4.4)
 
 ### Requirements
-- Text must scale to 200% without loss of content or functionality
-- No horizontal scrolling at standard viewport widths when scaled
-- All text must use relative units (`rem`, `em`, `%`)
+- Text can be resized to 200% (browser zoom counts) without loss of content or functionality
+- Pixel font sizes are **not** a 1.4.4 failure on their own — browsers zoom px text. The failures W3C documents are clipped, truncated or overlapping text at 200% (F69), text-based form controls that don't grow with the text (F80), and font sizes set only in viewport units, which zoom can't enlarge (F94)
+- Horizontal scrolling at 320 CSS px is a separate criterion (1.4.10 Reflow)
+- Relative units (`rem`, `em`) also honor the user's browser default font size, so prefer them — a `[Best Practice]`, or a `[DS Requirement]` if your system mandates it
 
 ### Audit Patterns
 ```typescript
-// ❌ Fixed pixel sizes don't scale with user preferences
+// ✓ Fine for 1.4.4 — zoom scales px text
 font-size: 14px;
 
-// ✓ Relative units scale with root font size
+// ✓ Better practice — also follows the user's default font-size setting
 font-size: 0.875rem; // 14px at default root
-font-size: 0.875em;  // 14px relative to parent
 
-// ❌ Fixed viewport heights can clip scaled text
+// ❌ F94 — viewport-only sizing doesn't grow with zoom
+font-size: 2vw;
+// ✓ Fix — mix in a relative unit
+font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+
+// ❌ F69 — fixed height clips scaled text
 height: 50px;
 
 // ✓ Allow content to grow
@@ -152,19 +157,44 @@ const responsiveType = {
 
 ## Issue Templates
 
-### Line Height Too Tight
+### Text Clipped Under Spacing Override
 ```markdown
-### [MODERATE] Insufficient line height
+### [MODERATE] Card text clipped when users increase text spacing
 
 **WCAG Criterion:** 1.4.12 — Text Spacing (Level AA)
+**Source label:** [WCAG 2.1 AA]
+**Location:** `src/components/Card.tsx:18`
+**Category:** Typography & Readability
+
+**Current State:**
+With the text-spacing override applied, the card description is cut off by
+`height: 96px; overflow: hidden`
+
+**Required State:**
+No loss of content when users set line height 1.5×, paragraph spacing 2×,
+letter spacing 0.12em and word spacing 0.16em
+
+**Code Fix:**
+\`\`\`css
+/* Before */
+.card-description { height: 96px; overflow: hidden; }
+
+/* After */
+.card-description { min-height: 96px; }
+\`\`\`
+```
+
+### Tight Default Line Height (design-system default, not WCAG)
+```markdown
+### [MINOR] Body line height below the design-system default
+
+**Source label:** [DS Requirement] — 1.4.12 only requires that content survive a user's
+override, not that you ship 1.5
 **Location:** `src/styles/tokens.css:42`
 **Category:** Typography & Readability
 
 **Current State:**
-Body text line-height is 1.2
-
-**Required State:**
-Line height at least 1.5 times the font size
+Body text line-height is 1.2; the design system specifies 1.5
 
 **Code Fix:**
 \`\`\`css
@@ -176,27 +206,28 @@ Line height at least 1.5 times the font size
 \`\`\`
 ```
 
-### Fixed Pixel Font Size
+### Text Clipped at 200% Zoom
 ```markdown
-### [MODERATE] Non-scalable text
+### [SERIOUS] Button label truncated at 200% zoom
 
 **WCAG Criterion:** 1.4.4 — Resize Text (Level AA)
-**Location:** `src/components/Label.tsx:8`
+**Source label:** [WCAG 2.0 AA]
+**Location:** `src/components/Button.tsx:8`
 **Category:** Typography & Readability
 
 **Current State:**
-Font size uses fixed pixels: `fontSize: '12px'`
+`height: 32px; white-space: nowrap; overflow: hidden` truncates the label at 200% zoom
 
 **Required State:**
-Use relative units (rem, em) for user-scalable text
+Text can be resized to 200% without loss of content or functionality
 
 **Code Fix:**
 \`\`\`tsx
 // Before
-fontSize: '12px'
+className="h-8 overflow-hidden whitespace-nowrap"
 
 // After
-fontSize: '0.75rem'
+className="min-h-8 py-1"
 \`\`\`
 ```
 

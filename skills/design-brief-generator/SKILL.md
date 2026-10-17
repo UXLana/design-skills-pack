@@ -1,21 +1,40 @@
 ---
 name: design-brief-generator
-description: Generate structured design briefs and PRDs for UX projects. Use when the user needs to gather project requirements, conduct design discovery, synthesize async inputs (form responses, Slack threads, meeting notes) into a brief, or output a markdown PRD optimized for vibe-coding. Supports both guided discovery (interactive Q&A) and synthesis mode (processing existing inputs).
+description: 'Run upstream design discovery and produce a design brief: problem (5 Ws), users and tasks, business value, Lean UX hypothesis and riskiest assumption, scope, constraints (including accessibility target), risks, and success metrics, with every gap marked TBD. Two modes: guided discovery (asks one section at a time) or synthesis (turns intake-form answers, Slack threads or kickoff notes into a brief). Also produces an async intake form. Use when the user says "write a design brief", "project kickoff", "discovery questions", "intake form for this request", "what problem are we solving", "brief from these notes", or is starting a UX project before a solution is chosen. Not for a build-ready feature spec or acceptance criteria (use intent-spec or spec-pack), and not for capturing what a sync decided vs. left open (use requirements-to-decision-doc).'
 ---
 
 # Design Brief Generator
 
-Generate structured design briefs and PRDs for UX work. Two modes: guided discovery (interactive Q&A) or synthesis (process existing inputs).
+Run upstream design discovery and produce a structured design brief before anyone commits to a solution. Two modes: guided discovery (interactive Q&A) or synthesis (process existing inputs).
+
+## Where this fits
+
+The brief captures *why*, *for whom* and *what success looks like*, and marks every gap TBD. It is deliberately not a build spec. When the team is ready to build, hand off:
+
+- Build-ready feature spec and acceptance criteria → `intent-spec` or `spec-pack`
+- What a meeting decided vs. left open → `requirements-to-decision-doc`
 
 ## Workflow
 
 1. **Determine mode:**
-   - **Guided discovery?** → Walk through questions interactively
-   - **Synthesis mode?** → User provides existing inputs (form responses, notes, Slack threads) → Extract and organize into brief
+   - **Guided discovery?** → Walk through the question set, one section per turn (see Pacing)
+   - **Synthesis mode?** → User provides existing inputs (form responses, notes, Slack threads) → Extract and organize into the brief, then ask only about required sections that are still empty
+   - **Async intake form requested?** → Read `references/intake-form.md` and produce the form
 
 2. **Gather information** using the question set below
 
-3. **Generate PRD** using template in `references/prd-template.md`
+3. **Generate the brief** using the template in `references/prd-template.md`
+
+4. **Offer the hand-off** — name the spec skill that comes next
+
+## Pacing (guided mode)
+
+The full set is about 40 questions. Asked all at once, people skim and answer only the easy ones, so:
+
+- Ask one section per turn, at most four questions. Split a longer section (Constraints) across two turns.
+- **Required:** Problem Statement, Users & Tasks, Scope, Success. Everything else is optional: offer it in one line ("Want to cover stakeholders and risks now, or mark them TBD?") and move on if declined.
+- Skip questions already answered. When you can infer an answer, state it and let the user correct it rather than asking again.
+- If Constraints is skipped, still record the accessibility target as WCAG 2.2 AA (assumed), so it reaches the brief.
 
 ## Question Set
 
@@ -37,7 +56,7 @@ Then synthesize into a user need statement:
 > "As a [user type], I need [need/goal] so that [reason/outcome]."
 
 ### Users & Tasks
-- **Primary users** — Who is this for? (Operators, suppliers, field teams, auditors, regulators, internal ops?)
+- **Primary users** — Who is this for? (Customers, admins, internal staff, partners, support agents?)
 - **User goal** — What are they trying to accomplish?
 - **Primary tasks** — What specific workflows or routine tasks does the user perform to achieve this goal? List the key steps.
 - **Pain points** — What's broken or frustrating about their current experience?
@@ -66,8 +85,9 @@ Frame beliefs using the Lean UX hypothesis format:
 - **Existing patterns** — Any features or flows we should reference or extend?
 
 ### Constraints
+- **Accessibility target** — WCAG 2.2 AA unless the user names another. Public-sector work can add a legal standard: Section 508 for US federal agencies (it incorporates WCAG 2.0 AA) or ADA Title II for US state and local governments (WCAG 2.1 AA). Ask which applies, and whether any known users rely on assistive technology.
 - **Compliance/regulatory** — Legal or regulatory requirements that apply?
-- **State/jurisdiction** — Which states or markets does this affect?
+  - *Only if rules differ by region:* which jurisdictions or markets are in scope?
 - **Technology** — What's the current tech stack? Any limitations or integration requirements?
 - **Platform** — Web, mobile, both? Browser requirements? Offline needs?
 - **Timeline** — When does this need to ship? Hard deadlines?
@@ -79,7 +99,7 @@ Frame beliefs using the Lean UX hypothesis format:
 - **Mitigation** — How might we reduce the biggest risks?
 
 ### Success
-- **Definition of done** — How do we know this is "finished"?
+- **Definition of done** — How do we know this is "finished"? (Include the accessibility target.)
 - **Success metrics** — What will we measure? (Adoption, task completion, error reduction, support tickets?)
 - **Baseline** — Current state we're improving from? (Include numbers if available)
 - **Target** — What does success look like quantitatively?
@@ -90,78 +110,13 @@ Frame beliefs using the Lean UX hypothesis format:
 - **Previous attempts** — Has this been tried before? What happened?
 - **Links** — Relevant docs, Jira tickets, Figma files, Slack threads?
 
-## Google Form Questions
-
-Use these as form fields for async intake:
-
-```
-PROJECT BASICS
-1. Project/feature name
-2. What initiated this request? (Customer pain point / Compliance change / Internal initiative / Leadership request / Tech debt / Other)
-
-PROBLEM STATEMENT
-3. Who is experiencing this problem? (Select all: Operators / Suppliers / Field teams / Auditors / Regulators / Internal ops / Other)
-4. What is the problem or unmet need?
-5. Where/when does this problem occur? (Context, touchpoint, frequency)
-6. Why does this matter? (Impact on user and/or business)
-
-USERS & TASKS
-7. What is the user trying to accomplish? (Their goal)
-8. What specific tasks or workflows does the user perform today to achieve this goal?
-9. What's broken or frustrating about their current experience?
-
-BUSINESS VALUE
-10. What business outcome does this support? (Revenue / Efficiency / Compliance / Retention / Other)
-11. Why is this a priority right now?
-
-STAKEHOLDERS
-12. Who is the requestor?
-13. Who has final decision-making authority?
-14. Who else is involved? (PM, eng lead, designers, compliance?)
-
-HYPOTHESES & ASSUMPTIONS
-15. What do you believe will happen if we solve this? (Complete: "We believe [outcome] will be achieved if [user] attains [benefit] with [solution]")
-16. What must be true for this to work? (Key assumptions)
-17. Which assumption, if wrong, would cause this to fail?
-
-SCOPE
-18. What must the solution do? (Must-haves)
-19. What would be nice to have but isn't critical?
-20. What is explicitly out of scope?
-21. Are there existing features or patterns we should reference?
-
-CONSTRAINTS
-22. Any compliance or regulatory requirements?
-23. Which states or markets does this affect?
-24. What's the current technology stack? Any technical constraints?
-25. Platform requirements? (Web / Mobile / Both / Offline support needed?)
-26. When does this need to ship? Any hard deadlines?
-27. Any budget or staffing constraints?
-
-RISKS
-28. What could go wrong? (Design, technical, adoption, compliance risks)
-29. What dependencies exist? What else needs to happen for this to succeed?
-
-SUCCESS
-30. How will we know this is "done"?
-31. What metrics will we measure?
-32. What's the current baseline? (Numbers if available)
-33. What does success look like? (Target numbers)
-
-CONTEXT
-34. Any existing research, data, or user feedback available?
-35. Competitors or products that do this well?
-36. Has this been tried before? What happened?
-37. Links to relevant docs, Jira tickets, Figma files, Slack threads
-```
-
 ## Output
 
-After gathering information, generate the PRD using the template in `references/prd-template.md`. The output is optimized for:
+After gathering information, generate the brief using the template in `references/prd-template.md`. The brief serves:
 
-1. **Vibe-coding** — Clear sections an AI coding assistant can work from
-2. **Stakeholder alignment** — Shareable artifact for PM/eng/design sync
-3. **Gap identification** — Missing information flagged explicitly
+1. **Stakeholder alignment** — A shareable artifact for a PM/eng/design sync
+2. **Gap identification** — Missing information flagged explicitly
+3. **Hand-off** — Seed criteria and a short "For the build agent" note, so the spec stage starts from the brief instead of re-asking
 
 ## Handling Incomplete Information
 
@@ -169,3 +124,8 @@ If information is missing:
 - Generate what you can
 - Add `[TBD]` placeholders with specific questions to resolve
 - Include a "Gaps to Resolve" section at the end listing open questions
+
+## Reference Files
+
+- `references/prd-template.md` — The brief template. Read it when generating the brief.
+- `references/intake-form.md` — Async intake form fields. Read it only when the user asks for a form to send out.

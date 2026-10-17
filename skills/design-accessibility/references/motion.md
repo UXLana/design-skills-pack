@@ -1,5 +1,7 @@
 # Timing & Motion
 
+**Contents:** Core Requirements · Reduced Motion · Auto-Playing Content (incl. carousels) · Flashing Content · Loading States · Session Timeouts (2.2.1) · Issue Templates · Testing Checklist
+
 ## Core Requirements
 
 | Requirement | WCAG Criterion | Level | Status |
@@ -8,9 +10,9 @@
 | No flashing >3/second | 2.3.1 | A | Required |
 | Timing adjustable | 2.2.1 | A | Required |
 | Animation from interactions (disable non-essential motion) | 2.3.3 | AAA | Not required at AA |
-| Respect `prefers-reduced-motion` | (supports 2.2.2 + 2.3.1) | — | **Best practice — no single AA criterion** |
+| Respect `prefers-reduced-motion` | (supports 2.2.2 + 2.3.1) | — | **No AA criterion** — `[DS Requirement]` or `[Best Practice]` |
 
-> **Important:** `prefers-reduced-motion` is NOT itself a WCAG 2.2 AA requirement. Do not cite it as a WCAG failure. Cite it as a **best practice that supports** 2.2.2 (for auto-playing content) and 2.3.1 (by reducing seizure risk from motion), or as 2.3.3 if calling out at AAA level. For government-contract audits, or any design system that mandates it, reduced-motion support is effectively mandatory as a DS quality gate — label findings as `[Best Practice — DS Requirement]`, not as WCAG failures.
+> **Important:** `prefers-reduced-motion` is not itself a WCAG 2.2 AA requirement, so don't cite it as a WCAG failure. It supports 2.2.2 (auto-playing content) and lowers 2.3.1 risk, and maps to 2.3.3 at AAA. If your design system or contract mandates reduced-motion support, label findings `[DS Requirement]`; otherwise `[Best Practice]` (see SKILL.md "Source Labels").
 
 ## Reduced Motion
 
@@ -134,62 +136,66 @@ function AnimatedComponent() {
 
 ### Implementation
 
+Follow the APG carousel pattern:
+
+- The rotation control comes **first** in the carousel's tab order, and its label names the action ("Stop slide rotation" / "Start slide rotation") rather than using `aria-pressed`.
+- Rotation stops when keyboard focus enters the carousel or the pointer hovers it, and doesn't restart on its own after focus.
+- The slide wrapper's live region is `aria-live="off"` while rotating (otherwise every auto-advance interrupts the screen reader) and `"polite"` when stopped, so manual Next/Previous changes are announced.
+
 ```tsx
 // Auto-playing carousel with controls
 function Carousel({ slides, autoPlay = true }) {
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [currentSlide, setCurrentSlide] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const count = slides.length;
 
-  // Don't auto-play if user prefers reduced motion
+  // Don't auto-play if the user prefers reduced motion
   useEffect(() => {
-    if (prefersReducedMotion) {
-      setIsPlaying(false);
-    }
+    if (prefersReducedMotion) setIsPlaying(false);
   }, [prefersReducedMotion]);
 
   useEffect(() => {
     if (!isPlaying) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide((prev) => (prev + 1) % count);
     }, 5000);
     return () => clearInterval(timer);
-  }, [isPlaying, slides.length]);
+  }, [isPlaying, count]);
 
   return (
-    <div role="region" aria-label="Image carousel" aria-roledescription="carousel">
-      <div aria-live="polite">
-        Slide {currentSlide + 1} of {slides.length}
+    <section
+      aria-roledescription="carousel"
+      aria-label="Featured stories"
+      onFocus={() => setIsPlaying(false)}   // focus inside stops rotation for good
+      onMouseEnter={() => setIsPlaying(false)}
+    >
+      {/* Rotation control first in tab order; label states the action */}
+      <button onClick={() => setIsPlaying(!isPlaying)}>
+        {isPlaying ? 'Stop slide rotation' : 'Start slide rotation'}
+      </button>
+      <button onClick={() => setCurrentSlide((prev) => (prev - 1 + count) % count)}>
+        Previous slide
+      </button>
+      <button onClick={() => setCurrentSlide((prev) => (prev + 1) % count)}>
+        Next slide
+      </button>
+
+      {/* Off while rotating, polite when the user is in control */}
+      <div aria-live={isPlaying ? 'off' : 'polite'} aria-atomic="false">
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${index + 1} of ${count}`}
+            hidden={index !== currentSlide}
+          >
+            {slide}
+          </div>
+        ))}
       </div>
-      
-      {/* Slides */}
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          role="group"
-          aria-roledescription="slide"
-          aria-label={`Slide ${index + 1} of ${slides.length}`}
-          hidden={index !== currentSlide}
-        >
-          {slide}
-        </div>
-      ))}
-      
-      {/* Controls */}
-      <button 
-        onClick={() => setIsPlaying(!isPlaying)}
-        aria-label={isPlaying ? 'Pause carousel' : 'Play carousel'}
-      >
-        {isPlaying ? <PauseIcon /> : <PlayIcon />}
-      </button>
-      
-      <button onClick={() => setCurrentSlide(prev => prev - 1)}>
-        Previous
-      </button>
-      <button onClick={() => setCurrentSlide(prev => prev + 1)}>
-        Next
-      </button>
-    </div>
+    </section>
   );
 }
 ```
@@ -310,14 +316,16 @@ function SkeletonLoader() {
 
 ## Session Timeouts (2.2.1)
 
-For compliance software, timeouts must be adjustable:
+For each time limit the content sets, at least one must hold: users can turn it off, adjust it to at least 10× the default, or are warned and given at least 20 seconds to extend it with a simple action (and can extend at least 10 times). Exceptions: real-time events, essential limits, and limits over 20 hours.
+
+Warning two minutes ahead (below) is a common `[DS Requirement]` for long forms; the WCAG floor is 20 seconds.
 
 ```tsx
 function SessionTimeoutWarning({ 
   timeRemaining, 
   onExtend, 
   onLogout,
-  minimumWarningTime = 120 // 2 minutes warning
+  minimumWarningTime = 120 // 2-minute warning — DS choice; WCAG requires at least 20 s
 }) {
   const showWarning = timeRemaining <= minimumWarningTime;
   
@@ -355,8 +363,8 @@ function SessionTimeoutWarning({
 ```markdown
 ### [MODERATE] Animation ignores prefers-reduced-motion
 
-**Criterion:** Best practice (supports WCAG 2.2.2 Pause Stop Hide · Level A; reduces 2.3.1 risk; maps to 2.3.3 Animation from Interactions · AAA)
-**DS Status:** Required (exceeds WCAG AA baseline)
+**Source label:** [DS Requirement] — supports 2.2.2 and 2.3.1, maps to 2.3.3 (AAA); not an AA failure
+**DS Status:** Required by the design system (exceeds the WCAG AA baseline)
 **Location:** `src/components/Modal.tsx:34`
 **Category:** Timing & Motion
 

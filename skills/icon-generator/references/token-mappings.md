@@ -7,12 +7,12 @@ Token names and paths below are illustrative; substitute the names from your own
 Map icon sizes to the design system spacing/size tokens.
 
 ```typescript
-// Icon size token mapping
+// Icon size token mapping (the same scale as BaseIcon's iconSizes)
 export const iconSizes = {
   xs: 12,   // Extra small - inline badges, compact UI
   sm: 16,   // Small - body text inline, secondary actions
   md: 20,   // Medium - navigation, primary buttons (DEFAULT)
-  lg: 24,   // Large - headers, emphasis, touch targets
+  lg: 24,   // Large - headers, emphasis
   xl: 32,   // Extra large - feature sections
   '2xl': 48 // 2X large - hero, empty states
 }
@@ -55,89 +55,64 @@ export const iconColors = {
 }
 ```
 
+Any color used for a meaningful icon needs 3:1 against its background (see the table in `accessibility.md`); check `muted` and `disabled` in particular.
+
 ## Stroke Width Tokens
 
 ```typescript
-// Stroke weight options
+// Stroke weight options; pick one for the whole set
 export const iconStrokeWidths = {
-  thin: 1,      // Delicate, refined
-  default: 1.5, // Standard weight (RECOMMENDED)
-  medium: 2,    // Slightly bold
+  light: 1.5,   // For sets drawn at 1.5px
+  default: 2,   // Lucide-style default (RECOMMENDED)
   bold: 2.5     // Heavy emphasis
 }
 ```
 
-## Component Token Integration
+## Component Token Integration — format
 
-### Button Icons
+Record how each component sizes and colors its icons, in the repo's token file. The entries below show the shape; replace them with the repo's own components.
+
 ```typescript
-// Button component icon sizing
-buttonTokens: {
+// Button: icon size per button size
+export const buttonTokens = {
   icon: {
     lg: iconSizes.md,  // 20px in large buttons
     md: iconSizes.sm,  // 16px in medium buttons
   },
   gap: {
-    lg: spacing.3,     // 12px gap
-    md: spacing.2,     // 8px gap
-  }
+    lg: spacing[3],    // 12px gap
+    md: spacing[2],    // 8px gap
+  },
 }
-```
 
-### Navigation Icons
-```typescript
-// Sidebar navigation icons
-navTokens: {
+// Navigation: section headers vs. items
+export const navTokens = {
   icon: {
-    section: iconSizes.lg,  // 18px for section headers
+    section: iconSizes.lg,  // 24px for section headers
     item: iconSizes.md,     // 20px for nav items
   },
   color: {
     default: 'colors.text.mediumEmphasis',
     active: 'colors.text.highEmphasis',
-    hover: 'colors.text.highEmphasis',
-  }
-}
-```
-
-### Banner Icons
-```typescript
-// Banner component icons
-bannerTokens: {
-  icon: {
-    md: iconSizes.md,   // 20px
-    lg: iconSizes.lg,   // 24px
   },
-  colors: {
-    info: 'colors.semantic.info.main',
-    success: 'colors.semantic.success.main',
-    warning: 'colors.semantic.warning.main',
-    error: 'colors.semantic.error.main',
-  }
 }
 ```
 
-### Tab Icons
+Keep each comment in step with the token it describes: `iconSizes.lg` is 24px, so a comment saying anything else is a bug in the docs.
+
+## Target Size and Focus Tokens
+
 ```typescript
-// Tab component icons
-tabTokens: {
-  icon: {
-    default: iconSizes.md,  // 20px
-  },
-  positions: ['none', 'top', 'leading', 'only']
+// Pointer target sizes; the WCAG criteria are in the table in accessibility.md
+export const targetSize = {
+  min: 24,     // 2.5.8 Target Size (Minimum), AA floor for dense desktop UI
+  touch: 44,   // 2.5.5 Target Size (Enhanced), AAA; comfortable touch default
 }
-```
 
-## Accessibility Tokens
-
-```typescript
-// Minimum touch target sizes
-accessibilityTokens: {
-  minTouchTarget: 44,      // 44px minimum for touch
-  minClickTarget: 24,      // 24px minimum for pointer
-  focusRingWidth: 2,       // 2px focus ring
-  focusRingOffset: 2,      // 2px offset from element
-  focusRingColor: 'colors.brand.primary',
+export const focusRing = {
+  width: 2,    // px
+  offset: 2,   // px from the element
+  color: 'colors.brand.primary',  // needs 3:1 against adjacent colors
 }
 ```
 
@@ -145,7 +120,7 @@ accessibilityTokens: {
 
 ```typescript
 // Icon animation tokens
-transitionTokens: {
+export const transitionTokens = {
   // Rotation (chevrons, spinners)
   rotate: {
     duration: 'transitions.duration.normal',  // 200ms
@@ -163,7 +138,7 @@ transitionTokens: {
     duration: '1000ms',
     timing: 'linear',
     iteration: 'infinite',
-  }
+  },
 }
 ```
 
@@ -172,24 +147,34 @@ transitionTokens: {
 ### In React Components
 
 ```tsx
-import { iconSizes, iconColors } from '@/styles/design-tokens'
+import { colors } from '@/styles/design-tokens'
+import { IconAlertCircle, IconCheck, IconSettings } from '@/components/Icons'
 
-// Using size tokens
-<IconSettings size="md" /> // Uses iconSizes.md = 20px
+function UsageExamples() {
+  return (
+    <>
+      {/* Using size tokens: iconSizes.md = 20px */}
+      <IconSettings size="md" />
 
-// Using color via CSS inheritance
-<div style={{ color: colors.semantic.error.main }}>
-  <IconAlert /> // Inherits red color
-</div>
+      {/* Using color via CSS inheritance */}
+      <div style={{ color: colors.semantic.error.main }}>
+        <IconAlertCircle />
+      </div>
 
-// Using custom color prop
-<IconCheck style={{ color: colors.semantic.success.main }} />
+      {/* Setting color directly */}
+      <IconCheck style={{ color: colors.semantic.success.main }} />
+    </>
+  )
+}
 ```
 
 ### In Inline Styles
 
 ```tsx
-const iconStyle: React.CSSProperties = {
+import type { CSSProperties } from 'react'
+import { colors, iconSizes, transitions } from '@/styles/design-tokens'
+
+const iconStyle: CSSProperties = {
   width: iconSizes.md,
   height: iconSizes.md,
   color: colors.text.highEmphasis,
@@ -201,7 +186,7 @@ const iconStyle: React.CSSProperties = {
 
 ```typescript
 // When icons need stacking context
-zIndex: {
+export const iconZIndex = {
   iconBadge: 1,        // Badge over icon
   iconOverlay: 2,      // Overlay indicator
   iconTooltip: 700,    // Tooltip z-index

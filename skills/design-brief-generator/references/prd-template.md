@@ -1,6 +1,6 @@
-# PRD Template
+# Design Brief Template
 
-Use this template to generate the final PRD output. Format optimized for vibe-coding and AI coding assistants.
+Use this template to generate the brief. Keep every heading; fill unknowns with `[TBD]` and list them under Gaps to Resolve.
 
 ---
 
@@ -97,11 +97,13 @@ Use this template to generate the final PRD output. Format optimized for vibe-co
 
 ## Constraints
 
+### Accessibility
+- **Target:** [WCAG 2.2 AA by default; add Section 508 or ADA Title II if public-sector]
+- **Known assistive-technology needs:** [Screen readers, keyboard-only, magnification, or "None identified"]
+
 ### Compliance & Regulatory
 [Specific compliance requirements, or "None identified"]
-
-### Jurisdictions
-[Which states/markets this affects]
+- **Jurisdictions:** [Only if rules differ by region: which jurisdictions or markets are in scope]
 
 ### Technology
 - **Current Stack:** [Relevant tech]
@@ -142,7 +144,8 @@ Use this template to generate the final PRD output. Format optimized for vibe-co
 ## Success Criteria
 
 ### Definition of Done
-[Specific, testable criteria for "finished"]
+- [ ] [Specific, testable criterion for "finished"]
+- [ ] Accessibility: key flows meet [target], checked with keyboard, a screen reader and a contrast check
 
 ### Metrics
 | Metric | Baseline | Target |
@@ -152,16 +155,12 @@ Use this template to generate the final PRD output. Format optimized for vibe-co
 
 ---
 
-## Acceptance Criteria
+## Seed Criteria
 
-Use these for implementation and QA:
+Three to six plain-language outcomes. The spec stage turns these into full acceptance criteria.
 
-**[Feature/Flow 1]**
-- [ ] Given [context], when [action], then [expected result]
-- [ ] Given [context], when [action], then [expected result]
-
-**[Feature/Flow 2]**
-- [ ] Given [context], when [action], then [expected result]
+- [User type] can [outcome] [under what condition]
+- [User type] can [outcome] [under what condition]
 
 ---
 
@@ -209,18 +208,15 @@ Use these for implementation and QA:
 
 - [ ] [Gap 1]: [Question to answer]
 - [ ] [Gap 2]: [Question to answer]
-```
 
 ---
 
-## Notes for AI Coding Assistants
+## For the build agent
 
-When using this PRD for vibe-coding:
-
-1. **Start with Must Haves** — These are non-negotiable
-2. **Use Acceptance Criteria** — These define "correct" behavior
-3. **Check Edge Cases** — Handle these explicitly
-4. **Respect Out of Scope** — Don't over-build
-5. **Reference Existing Patterns** — Maintain consistency with linked examples
-6. **Validate Against Hypothesis** — The solution should test the stated hypothesis
-7. **Check Riskiest Assumption** — Consider how the implementation addresses or tests this
+This is a discovery brief, not a build spec. Before writing code, turn it into a spec with `intent-spec` or `spec-pack`.
+- Must Have and Out of Scope bound the work; don't build past them.
+- Seed Criteria are starting points, not acceptance criteria.
+- Resolve Gaps to Resolve first, or carry them into the spec as open questions.
+- The accessibility target applies to every screen and state.
+- The build should test the hypothesis and the riskiest assumption.
+```
