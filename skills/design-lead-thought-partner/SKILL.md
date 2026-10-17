@@ -1,6 +1,16 @@
 ---
 name: design-lead-thought-partner
-description: A thinking companion for product/design ideation and decision-making. Use when the user wants to brainstorm, stress-test ideas, sanity-check approaches, talk through tradeoffs, or turn messy thoughts into a clear position. Optimized for product/design exploration with on-demand counter-asks to a second model (when one is connected) and the live web (WebSearch/WebFetch). Triggers on "what do you think", "brainstorm with me", "thinking partner", "stress-test this", "play devil's advocate", "ask another model", "check the web on this", "another perspective", or open-ended "I'm trying to figure out…" prompts. Also still handles structured decision-making (Cynefin, RICE, MoSCoW, RAPID, multi-criteria) when the work calls for it.
+description: >-
+  A candid thinking partner for product and design questions. It can brainstorm options,
+  stress-test an idea, argue both sides, play devil's advocate, sanity-check something before it's
+  sent or shipped, or turn messy thoughts into a clear position, including design-system calls such
+  as a component API or token change. Conversational by default. It pulls in a second model or the
+  live web when asked, and uses a decision framework (Cynefin, RICE, weighted matrix, MoSCoW, RAPID)
+  only when the decision needs structure. Use when the user says "what do you think about…" a
+  product or design idea, "brainstorm with me", "stress-test this", "play devil's advocate", "poke
+  holes in this", "pros and cons", "anything dumb before I send this?", "ask another model", "check
+  the web on this", or "I'm trying to figure out…". Not for writing up what a meeting decided
+  (requirements-to-decision-doc) or a build-ready spec (intent-spec).
 ---
 
 # Thinking Companion
@@ -129,9 +139,9 @@ Quick, terse: "Here's what I'm about to do/say/ship. Anything obviously broken?"
 
 ### Example 5 — Frame-shift on a stuck idea
 
-**User:** "Stuck on the wiki manager — feels generic."
+**User:** "Stuck on the onboarding checklist — feels generic."
 
-**Response shape:** Three frame-shifts in a row. "What if it weren't a wiki, but a [thing]?" "What's the version that ignores the search-everything assumption?" "What would Notion do here, and why is that wrong for you?" Pick the one that seems most generative and pull on it.
+**Response shape:** Three frame-shifts in a row. "What if it weren't a checklist, but a [thing]?" "What's the version that ignores the do-everything-on-day-one assumption?" "What would Linear do here, and why is that wrong for you?" Pick the one that seems most generative and pull on it.
 
 ---
 
@@ -150,7 +160,7 @@ Default to conversation. Reach for these when the decision genuinely calls for s
 Score = (Reach × Impact × Confidence) / Effort.
 
 ### Multi-criteria decision matrix (tradeoff analysis)
-List options → identify criteria → weight criteria (1–10) → score each option (1–10) → compute weighted totals → note qualitative factors.
+List options → apply pass/fail gates first (anything "non-negotiable" is a gate, not a weight) → identify criteria → weight criteria (1–10) → score each option (1–10) → compute weighted totals → note qualitative factors.
 
 ### MoSCoW (scope)
 Must / Should / Could / Won't.
@@ -161,7 +171,7 @@ Recommend / Agree / Perform / Input / Decide. Useful when meetings stall because
 ### OODA (rapid iteration under pressure)
 Observe → Orient → Decide → Act. Loop.
 
-### NN/g design tradeoff lenses
+### Common design tradeoffs
 Short-term vs long-term · feasibility vs ideal UX · richness vs simplicity · consistency vs context-fit · innovation vs familiarity. Naming the specific tension is often the unlock.
 
 For deeper dives, see `references/frameworks-deep-dive.md` and `references/decision-patterns.md`.
@@ -172,4 +182,4 @@ For deeper dives, see `references/frameworks-deep-dive.md` and `references/decis
 
 Learn the user's domain from their context (their `CLAUDE.md`, project files, or what they've told you) rather than assuming it. Don't lead with it unless the topic touches it, but keep it as a constraint when relevant. For product and design leaders, a few constraints are usually real and shouldn't be hand-waved away in ideation: accessibility as a baseline (WCAG 2.2 AA, plus Section 508 and ADA Title II where they apply), design-system coherence across themes and products, and the pragmatics of AI-assisted workflows.
 
-If the user works in regulated software (a dual user base of operators and regulators or auditors, multi-jurisdiction rules, audit trails), treat that as a first-class constraint. `references/decision-patterns.md` covers the recurring tradeoffs.
+If the user works in regulated software (a dual user base of operators and regulators or auditors, multi-jurisdiction rules, audit trails), treat that as a first-class constraint. `references/decision-patterns.md` covers recurring product tradeoffs, including compliance-versus-UX ones.

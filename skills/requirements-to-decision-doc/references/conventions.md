@@ -11,13 +11,23 @@ A review artifact competes for scarce reviewer attention. If everything looks eq
 Define these CSS variables and reuse them everywhere (pills, diagram node fills, lozenges):
 
 ```css
---done:#1b8a4b;  --done-bg:#e6f5ec;   /* Decided  → green  */
---blue:#1f6fe5;  --blue-soft:#e8f0fe; /* Assumed  → blue   */
---assess:#c2740c;--assess-bg:#fff3e0; /* Open     → amber  */
---action:#7c3aed;--action-bg:#f1e9fe; /* Proposed → purple */
+--done:#137a40;     --done-bg:#e6f5ec;   /* Decided  → green  (4.80:1 on its bg, 5.40:1 on white) */
+--blue-ink:#1a56c4; --blue-soft:#e8f0fe; /* Assumed  → blue   (5.78:1 on its bg) */
+--assess:#9a5b06;   --assess-bg:#fff3e0; /* Open     → amber  (4.94:1 on its bg, 5.42:1 on white) */
+--action:#7c3aed;   --action-bg:#f1e9fe; /* Proposed → purple (4.84:1 on its bg) */
 ```
 
+Text in these colors must stay at 4.5:1 or more against its background (WCAG 2.2 AA, 1.4.3; the pills are small text). If you change a color, re-check every pair with a contrast checker. Use `--blue-ink` for blue *text*; the brighter `#1f6fe5` is only 4.11:1 on `--blue-soft`.
+
 Pill markup: `<span class="pill p-ok">Decided</span>` (ok=green, info=blue, med=amber; use the purple `--action` for Proposed). For a secondary qualifier (e.g. "Confirm w/ eng"), use a `.chip` with `white-space:nowrap` so it never wraps onto two lines next to a pill.
+
+## Accessibility
+
+- **Status is never color alone.** Pills print the status word; diagrams print it in node labels or a legend under the diagram.
+- **Permission matrix:** the ✓ / ▲ / · glyphs are `aria-hidden="true"`, each followed by visually-hidden text ("Yes", "Conditional", "No"). Screen readers otherwise read "check mark", "black up-pointing triangle", "middle dot". The "no" glyph uses `#6b7280` (4.83:1), not a pale grey.
+- **Diagrams:** every Mermaid source starts with `accTitle:` and `accDescr:` lines. Mermaid turns them into the SVG's accessible name and description.
+- **Controls:** the As-is / With-layer toggle buttons carry `aria-pressed`; **View code** carries `aria-expanded`; "Copied" is announced through a polite live region.
+- **Landmarks:** one `<main>`, and a labelled `<nav>` for the table of contents.
 
 ## Requirement IDs
 

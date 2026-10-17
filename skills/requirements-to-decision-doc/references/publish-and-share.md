@@ -9,17 +9,21 @@ The cleanest setup: one repo, auto-deploy on push.
 1. Put the artifact in a repo. **The shared landing page should be `index.html`** — Vercel serves `index.html` at the root by default. If the doc isn't the only artifact, either rename it to `index.html` (and rename any existing prototype, fixing cross-links) or add a `vercel.json` rewrite (`{ "rewrites": [{ "source": "/", "destination": "/your-doc.html" }] }`). Renaming is cleaner long-term; the rewrite is non-destructive.
 2. `git push` — if the Vercel project is connected to the repo, it auto-deploys in ~30–60s.
 
-### Deploy-auth gotcha (seen in practice)
+### If Vercel blocks the deployment
 
-Vercel **blocks** a deployment if the commit's author email isn't matched to a GitHub account ("commit email … could not be matched"). Fix without exposing a real email or changing GitHub settings: set the repo's git email to the GitHub no-reply address and re-author the commit.
+Vercel checks that the commit's author is allowed to deploy the project. Two different causes produce a "deployment blocked" message; read the message before changing anything, and see Vercel's guide "Why aren't commits triggering deployments on Vercel?" (vercel.com/kb/guide/commits-not-triggering-deployments).
 
-```bash
-git config user.email "<ID>+<username>@users.noreply.github.com"   # ID from: gh api user --jq .id
-git commit --amend --no-edit --reset-author
-git push --force-with-lease
-```
+1. **The commit email isn't linked to a GitHub account** ("commit email … could not be matched"). Fix without exposing a real email: set the repo's git email to the GitHub no-reply address and re-author the latest commit.
 
-Vercel only checks the deployed (latest) commit, so amending HEAD is enough.
+   ```bash
+   git config user.email "<ID>+<username>@users.noreply.github.com"   # ID from: gh api user --jq .id
+   git commit --amend --no-edit --reset-author
+   git push --force-with-lease
+   ```
+
+   `--amend` rewrites the latest commit, so the push has to replace the old one on GitHub (`--force-with-lease`, which refuses if someone else pushed in the meantime). Only do this on a branch nobody else works on; otherwise make a new commit with the right email instead.
+
+2. **Hobby plan, and the commit wasn't made by the project's owner.** Vercel's Hobby plan deploys only the account owner's commits; matching emails doesn't change that. Fixes: move the project to the committer's own Vercel account, have the owner push, or use a Pro team.
 
 ## Mirror to Confluence for inline comments
 

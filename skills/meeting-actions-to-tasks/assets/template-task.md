@@ -14,4 +14,4 @@ Source: {{SOURCE}}
 
 ## Acceptance Criteria
 
-- [ ] {{DONE_SIGNAL}}
+- [ ] {{DONE_SIGNAL — only if the notes say what "done" means; otherwise TBD}}

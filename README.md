@@ -19,7 +19,7 @@ and any brand.
 | --- | --- | --- |
 | **1. Frame & decide** | `design-brief-generator` | Runs guided discovery one section at a time, or turns kickoff notes, Slack threads and intake-form answers into a design brief: problem, users, hypothesis, scope, accessibility target and success metrics. |
 | | `design-lead-thought-partner` | A candid thinking partner for brainstorming, stress-testing ideas and working through tradeoffs, with decision frameworks (Cynefin, RICE, RAPID, MoSCoW) when you want structure. |
-| | `requirements-to-decision-doc` | Turns raw requirements, sync notes or PRD fragments into a status-tagged HTML decision doc that engineering and stakeholders can review. |
+| | `requirements-to-decision-doc` | Turns raw requirements, sync notes or PRD fragments into a status-tagged decision doc (markdown, or a hosted HTML page) that engineering and stakeholders can review. |
 | **2. Design with a system** | `brand-tokens-translator` | Reads brand guidelines (PDF, text or screenshots) and produces primitive and semantic design tokens as a review table and a DTCG `tokens.json` that Figma can import and CSS can use. |
 | | `theme-generator` | Builds a full product theme from one brand color, and audits existing themes for token coverage and contrast. |
 | | `token-audit` | Finds hard-coded colors, spacing, type, radii and shadows in code and maps each one to a token, or flags it for a new one. |
@@ -138,8 +138,9 @@ Repeat for each skill you want. Anthropic's current steps are in
   this pack is plain Markdown, so you can see exactly what it does.
 - **Some skills expect a stack.** `component-generator`, `token-audit`, `responsive-audit` and
   `design-accessibility` assume a React and TypeScript codebase with design tokens. `visual-qa` needs a
-  browser tool (Claude's built-in browser or Playwright). `flow-diagram-render` runs Mermaid CLI through
-  `npx`, and `theme-generator` ships a small contrast script, so both need Node.js. `portable-prototype`
+  browser tool (Claude's built-in browser or Playwright). `flow-diagram-render` and `flow-capture` render with
+  Mermaid CLI through `npx` (the first run downloads a headless Chrome), and `theme-generator` ships a small
+  contrast script, so all three need Node.js. `portable-prototype`
   works on Vite prototypes only and adds the `vite-plugin-singlefile` package.
 - **They adapt to your system.** Wherever a skill mentions "your design system," it looks for your tokens,
   components and conventions in the project you're working in. Nothing here is tied to a brand.

@@ -1,6 +1,15 @@
 ---
 name: intent-spec
-description: Interview the user to capture a feature's intent, then turn it into a build-ready spec. Use when they want to spec a feature before coding, hand a rough draft to formalize, or say "spec this up", "help me spec X", "let's write a spec", "flesh out my spec", "turn this into a real spec", "make this build-ready", "I wrote a rough spec". Runs a GUIDED INTERVIEW — one question at a time, waiting for each answer before the next — covering goal, locked decisions, flow, scenarios, acceptance criteria. The user owns the opinionated layer; the skill adds the mechanical layers (scope, edge cases, states, a11y, test plan) WITHOUT relitigating their decisions or demanding reproduction-level detail. Forward-only — for specs before a build. To reverse-engineer a spec FROM existing code, use spec-pack's Reverse mode instead.
+description: >-
+  Interview the user one question at a time to capture a feature's intent (goal, who it's for,
+  locked design decisions and why, rough flow, scenarios, acceptance checks), then turn it into a
+  build-ready spec by adding the mechanical layers: scope mapped to real files, formalized rules,
+  edge cases and states, accessibility (WCAG 2.2 AA), a test plan and a builder prompt, without
+  rewriting or relitigating the user's decisions. Use when the user says "help me spec X",
+  "spec this up", "let's write a spec", "flesh out my spec", "make this build-ready", "I wrote a
+  rough spec", or hands over a rough draft before a build. Not for discovery before a solution is
+  chosen (design-brief-generator), reverse-engineering a spec from existing code (spec-pack
+  Reverse mode), or finding missing states in a built screen (ui-edge-case-audit).
 ---
 
 # intent-spec
@@ -11,7 +20,7 @@ mechanical layers an agent can derive, without rewriting their decisions or aski
 them for detail that only exists after the build.
 
 This is the design → engineering handoff: intent in, build-ready spec out. It
-sits upstream of `spec-pack` (the quality-pipeline gate) and the builder (an
+sits upstream of `spec-pack` (whose template it fills) and the builder (an
 agent or build/review loop). It is forward-only.
 
 ```text
@@ -56,11 +65,12 @@ is a conversation, not a form.
 
 Walk the questions below in order. Each maps to one section of the intent layer.
 
-1. **Goal** — "In a sentence or two: what are we building, and why?"
+1. **Goal** — "In a sentence or two: what are we building, who is it for, and what
+   are they trying to do?"
 2. **Locked decisions** — "What design calls are already settled — the things you
    do *not* want relitigated? Give me one, and the reason behind it if there is
-   one." Then **loop**: "Any others?" — keep asking until they say that's all.
-   One decision per turn.
+   one." Then **loop**: "Any others?" — one decision per turn. After three, ask
+   once: "Anything else a builder might get wrong?" and move on.
 3. **Flow / shape** — "Walk me through the rough flow — the screens or steps, in
    order. A sketch in words is fine."
 4. **Scenarios** — "What cases are worth covering? (e.g. 'one clean, two blocked
@@ -71,6 +81,9 @@ Walk the questions below in order. Each maps to one section of the intent layer.
 Rules for the interview:
 - **One question per turn. Always wait for the answer.** If they answer two at
   once, great — acknowledge both and skip ahead; don't re-ask.
+- **Use a structured question UI when the tool has one** (for example a
+  multiple-choice prompt) for choice-style answers such as "skip scenarios?" or a
+  default to confirm. Open answers (goal, flow) stay free text.
 - **Acknowledge, then advance.** A short reflect-back ("Got it — exception-first,
   no side-by-side.") before the next question, so they can correct you live.
 - **Adapt.** Skip a question their earlier answer already covered; branch into a
@@ -111,7 +124,8 @@ verbatim** and adding around it:
   precise, testable statements (thresholds, order of operations, conditions).
 - **Edge cases & states** — empty / loading / error / overflow / null / the
   unhappy paths the user's happy-path list implies but doesn't enumerate.
-- **Accessibility, privacy, compliance** — keyboard, screen reader,
+- **Accessibility, privacy, compliance** — target WCAG 2.2 AA unless the project
+  names Section 508, ADA Title II or EN 301 549; keyboard, screen reader,
   contrast/focus, data/privacy, regulated-domain risk (non-negotiable for regulated compliance workflows).
 - **Test & verification plan** — unit / integration / visual / manual / repo
   health command.
@@ -120,8 +134,14 @@ verbatim** and adding around it:
   the rest and say so.
 - **Agent handoff prompt** — a concise builder prompt.
 
-Output format is the `spec-pack` template (so it flows straight into the gate),
-populated from their intent.
+Output format is the `spec-pack` template, populated from their intent:
+
+- Their goal and flow go, in their words, under **Goal** and **Users & context**;
+  their locked decisions under **Locked decisions**; their acceptance checks
+  under **Acceptance criteria** (formalized beside them, never replacing them).
+- Formalized rules → **Rules**. Edge cases and states → **States & edge cases**.
+- Open questions → **Assumptions & open questions**, split into low-stakes
+  assumptions and blockers.
 
 ## Sovereignty rule (do not violate)
 
@@ -144,8 +164,9 @@ populated from their intent.
 
 ## Handoff
 
-Once the user approves the improved spec, it is a normal spec-pack artifact:
-update the `spec_pack` gate (see `spec-pack`), then hand to the builder.
+Once the user approves the improved spec, it is a normal spec-pack artifact. If
+you track work through a pipeline, mark the spec step done there; then hand it to
+the builder.
 
 Builder prompt must say:
 

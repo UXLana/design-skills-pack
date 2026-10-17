@@ -1,57 +1,57 @@
 # Common Decision Scenarios
 
-This document captures recurring decision patterns specific to regulated software environments serving both government agencies and regulated businesses.
+Recurring product and design decisions, each with a worked process. The numbers and thresholds in them are illustrations of how to reason, not rules: set real ones with the people who own the outcome.
 
-## Scenario 1: Regulatory Requirement vs. User Experience
+## Scenario 1: Compliance Requirement vs. User Experience
 
-**Pattern:** A regulator requests a feature or data field that adds friction for the operators who use the product.
+**Pattern:** A compliance, legal or policy owner asks for a field, step or check that adds friction for the people who use the product every day.
 
-**Example:** "The agency wants a reason code on every inventory disposal event. Operators say this adds 30 seconds per item and they dispose of hundreds at once."
+**Example:** "Compliance wants a reason code on every record deletion. Power users say it adds 30 seconds per item, and they clean up hundreds of records at once."
 
 **Framework Recommendation:** Multi-Criteria Decision Matrix + Human-Centered Design
 
 **Decision Process:**
-1. **Understand the regulatory intent:** Why does the agency need this data? Is it for audits, policy analysis, or enforcement? Can the need be met another way?
-2. **Quantify the user pain:** How many operators? How often? What's the time cost? Interview actual users.
+1. **Understand the intent:** Why do they need this data? Is it for audits, reporting, or enforcement? Can the need be met another way?
+2. **Quantify the user pain:** How many users? How often? What's the time cost? Talk to actual users.
 3. **Explore creative solutions:**
-   - Bulk operations: Apply disposal reason to multiple items at once
-   - Smart defaults: Remember last-used reason code
+   - Bulk operations: Apply one reason to many items at once
+   - Smart defaults: Remember the last-used reason
    - Optional detail: Required high-level category, optional detailed reason
-   - Audit-time collection: Collect during inspections, not real-time entry
-4. **Prototype and test:** Build quick mockup, show to both regulators and operators
-5. **Make the tradeoff explicit:** Document which stakeholder's needs are being prioritized and why
+   - Later collection: Capture it during a periodic review, not at every action
+4. **Prototype and test:** Build a quick mockup and show it to both the compliance owner and the users
+5. **Make the tradeoff explicit:** Document whose needs are being prioritized and why
 
-**Key Principle:** Don't accept the premise. "Regulators want X" often means "Regulators need Y, and they think X is how to get it." Find creative solutions to Y.
+**Key Principle:** Don't accept the premise. "They want X" often means "They need Y, and they think X is how to get it." Find creative solutions to Y.
 
 ---
 
-## Scenario 2: Multi-Jurisdiction Feature Divergence
+## Scenario 2: Customers Asking for Incompatible Variations
 
-**Pattern:** Different jurisdictions request incompatible variations of the same feature.
+**Pattern:** Different customers, markets or segments ask for incompatible versions of the same feature.
 
-**Example:** "Jurisdiction A requires lab test results before a product can ship. Jurisdiction B allows shipping with results pending. Jurisdiction C wants both options selectable per license."
+**Example:** "Customer A requires a manager's approval before anything is published. Customer B wants to publish immediately. Customer C wants it configurable per team."
 
 **Framework Recommendation:** Cynefin + Tradeoff Analysis
 
 **Decision Process:**
 1. **Assess complexity:**
-   - **Complicated:** Jurisdictions have different rules but underlying workflow is similar → Build configurable system
-   - **Complex:** Unclear how users will adapt to options → Probe with pilots in one jurisdiction first
-   
+   - **Complicated:** The rules differ but the underlying workflow is the same → build a configurable system
+   - **Complex:** Unclear how people will use the options → probe with one customer first
+
 2. **Evaluate architecture options:**
-   - Unified workflow with configuration flags
-   - Separate code paths per jurisdiction (technical debt risk)
-   - Phased rollout (ship one jurisdiction, learn, adapt)
-   
+   - One workflow with configuration settings
+   - Separate code paths per customer (technical debt risk)
+   - Phased rollout (ship for one customer, learn, adapt)
+
 3. **Consider strategic factors:**
-   - How many more jurisdictions will we add this year?
-   - Is this a one-time divergence or emerging pattern?
+   - How many more variations are likely this year?
+   - Is this a one-time divergence or an emerging pattern?
    - What's the cost of refactoring later vs. building flexibly now?
-   
-4. **Make architecture decision:**
-   - If <3 jurisdictions: Separate flows, revisit if pattern emerges
-   - If 3-5 jurisdictions: Configuration system
-   - If >5 jurisdictions: Invest in flexible workflow engine
+
+4. **Make the architecture decision** (an example rule of thumb; agree the real cut-offs with engineering):
+   - A couple of variations: separate flows, revisit if the pattern grows
+   - A handful: a configuration system
+   - Many, and still growing: invest in a flexible workflow engine
 
 **Key Principle:** Optimize for the future you're likely to face, not the future you fear. Premature generalization creates technical debt too.
 
@@ -61,7 +61,7 @@ This document captures recurring decision patterns specific to regulated softwar
 
 **Pattern:** Engineering warns that a feature will increase technical debt, but stakeholders want the feature now.
 
-**Example:** "We can hack the batch recall feature into the current system in 2 weeks, but it'll make the planned inventory refactor much harder. Or we can wait 3 months to do it properly after the refactor."
+**Example:** "We can hack bulk export into the current system in 2 weeks, but it'll make the planned data-layer refactor much harder. Or we can wait 3 months and do it properly after the refactor."
 
 **Framework Recommendation:** RICE + Multi-Criteria Decision Matrix
 
@@ -69,138 +69,100 @@ This document captures recurring decision patterns specific to regulated softwar
 1. **Quantify the feature value:**
    - Run RICE on the feature itself
    - What's the cost of waiting 3 months?
-   - Is there a regulatory deadline?
-   
+   - Is there a contractual or regulatory deadline?
+
 2. **Quantify the technical debt:**
    - How much harder does this make the refactor? (effort multiplier)
-   - Does it create compliance/security risk?
+   - Does it create compliance or security risk?
    - How long will this "temporary" solution stay in production?
-   
+
 3. **Calculate total cost:**
-   - Quick hack: 2 weeks now + 4 weeks extra refactor later = 6 weeks total
-   - Proper approach: 3 months wait + proper implementation
-   - Include opportunity cost of delaying
-   
+   - Quick hack: 2 weeks now + extra refactor effort later (ask engineering for the number)
+   - Proper approach: 3 months' wait + proper implementation
+   - Include the opportunity cost of delaying
+
 4. **Criteria beyond effort:**
    - Stakeholder commitments (did we promise this?)
    - Team morale (is the team burned out on hacks?)
-   - Market timing (does this enable a major market launch?)
+   - Market timing (does this enable a major launch?)
 
-**Decision Matrix Example:**
+**Decision Matrix Example** (weights in brackets, scores 1–10 where 10 is best; weighted totals: hack 276, wait 255 of a possible 400):
 
 | Option | User Value (9) | Effort (7) | Tech Debt (8) | Strategic Timing (10) | Team Health (6) |
 |--------|----------------|------------|---------------|----------------------|----------------|
 | Hack it now | 8 | 8 | 3 | 10 | 4 |
 | Wait for refactor | 7 | 6 | 9 | 3 | 8 |
 
-**Key Principle:** The right answer depends on whether "this will make refactor harder" means 10% harder or 300% harder. Get engineering to quantify.
+The totals are within 8% of each other, close enough that the matrix doesn't decide this one; the size of the refactor penalty does.
+
+**Key Principle:** The right answer depends on whether "this will make the refactor harder" means 10% harder or 300% harder. Get engineering to quantify.
 
 ---
 
-## Scenario 4: Crisis Response (System Outage)
+## Scenario 4: Feature Request from a Single Large Customer
 
-**Pattern:** Production system serving multiple jurisdictions goes down. Pressure to restore service immediately.
+**Pattern:** Your largest customer requests a feature. Build for one or generalize for all?
 
-**Framework Recommendation:** OODA Loop + Chaotic Context (Cynefin)
-
-**Decision Process:**
-1. **Act First (Establish Order):**
-   - Failover to backup systems if available
-   - Communicate status to affected customers and agencies immediately
-   - Isolate affected systems to prevent cascade
-   
-2. **Observe (Gather Data):**
-   - Which jurisdictions are affected? Which customers impacted?
-   - What broke? What changed recently?
-   - Can we restore partial service?
-   
-3. **Orient (Analyze Context):**
-   - Is this a known issue with a known fix?
-   - Is this a novel failure requiring investigation?
-   - What's the compliance/legal exposure?
-   
-4. **Decide (Choose Action):**
-   - Rollback recent changes
-   - Apply emergency patch
-   - Redirect traffic to alternate infrastructure
-   
-5. **Loop Back:**
-   - Monitor for stability
-   - If still failing, iterate faster
-
-**Communication Cadence:**
-- **First 15 minutes:** "We're aware, investigating, ETA TBD"
-- **Every 30 minutes:** Status update, even if no progress
-- **When restored:** Root cause summary, prevention plan
-
-**Key Principle:** In chaos, speed matters more than perfection. Stabilize first, understand later, prevent recurrence eventually.
-
----
-
-## Scenario 5: Feature Request from a Single Large Customer
-
-**Pattern:** Your largest customer or jurisdiction requests a feature. Build for one or generalize for all?
-
-**Example:** "Your largest jurisdiction wants automated manifest generation for cross-border transfers. No other jurisdiction allows cross-border transfers yet, but a pending policy change might enable it."
+**Example:** "Our largest customer wants automated year-end reports in their own format. No one else has asked, but a change in their industry's rules might make others need it next year."
 
 **Framework Recommendation:** RICE + Cynefin (Complex Context)
 
 **Decision Process:**
 1. **Assess reach and impact:**
    - Current: Only the requester benefits (limited reach)
-   - Future: Many jurisdictions might benefit (high reach if the policy change happens)
-   - Uncertainty: When will others need this? 50% confidence?
-   
+   - Future: Many customers might benefit (high reach if the rule change happens)
+   - Uncertainty: When will others need this? How confident are you?
+
 2. **Probe before committing:**
    - Build a requester-specific MVP quickly
    - Learn from their usage patterns
    - Generalize later when others adopt
-   
+
 3. **Consider strategic value:**
-   - Does this strengthen the relationship with a key partner?
-   - Does this position us for coming policy changes?
+   - Does this strengthen the relationship with a key customer?
+   - Does this position us for the coming change?
    - Does this create competitive advantage?
-   
-4. **Decide architecture approach:**
-   - If the requester is paying for development: Build specific, generalize later if needed
-   - If we're funding: Build generalized only if 2+ others express interest
-   - If uncertain: Probe with a minimal requester-specific version, watch for signals
+
+4. **Decide the approach:**
+   - If the requester is paying for development: build specific, generalize later if needed
+   - If we're funding it: build generalized only if others have expressed interest
+   - If uncertain: probe with a minimal requester-specific version and watch for signals
 
 **Key Principle:** In complex environments, probe before building. Don't build the general solution for a problem only one customer has.
 
 ---
 
-## Scenario 6: Compliance Risk Trade-offs
+## Scenario 5: Convenience vs. Auditability
 
-**Pattern:** A feature could theoretically enable compliance violations or data integrity issues.
+**Pattern:** A feature users want could, in theory, be misused or weaken the record of what happened.
 
-**Example:** "Operators want 'undo' for inventory transfers to fix mistakes. Regulators worried about abuse: transferring to hide audit findings, then undoing."
+**Example:** "Users want 'undo' on approvals to fix mistakes. The compliance owner worries it could be used to approve something, act on it, then quietly reverse it."
 
 **Framework Recommendation:** Risk Matrix + Human-Centered Design
 
 **Decision Process:**
 1. **Identify the specific risks:**
    - Audit trail integrity (can we track undo events?)
-   - Abuse scenarios (what could bad actors do?)
-   - Legitimate use cases (what % of undos are honest mistakes?)
-   
-2. **Design for auditability first:**
-   - Undo creates a new audit log event (not deletion)
-   - Undo requires reason code + manager approval
-   - Undo has time window (only within 24 hours)
-   - Undo is highly visible in inspection views
-   
-3. **Pilot with controlled rollout:**
-   - Enable for subset of trusted operators first
-   - Monitor for abuse patterns
-   - Gather feedback from regulators during audits
-   
-4. **Make go/no-go decision:**
-   - If pilot shows <5% abuse rate: Expand to all operators
-   - If regulators report audit concerns: Add more safeguards
-   - If abuse is rampant: Shut it down, learn from failure
+   - Misuse scenarios (what could a bad actor do?)
+   - Legitimate use cases (what share of undos are honest mistakes?)
 
-**Decision Matrix:**
+2. **Design for auditability first:**
+   - Undo creates a new audit event (never a deletion)
+   - Undo requires a reason, and an approver for sensitive items
+   - Undo has a time window
+   - Undo is highly visible to reviewers
+
+3. **Pilot with a controlled rollout:**
+   - Enable for a subset of users first
+   - Monitor for misuse patterns
+   - Gather feedback from the compliance owner
+
+4. **Make the go/no-go decision** (agree the thresholds with the compliance owner *before* the pilot starts):
+   - Misuse below the agreed threshold: expand to everyone
+   - Audit concerns raised: add safeguards
+   - Misuse widespread: shut it down and learn from it
+
+**Decision Matrix** (illustrative scores, 10 = best):
 
 | Option | User Value | Compliance Risk | Audit Impact | Implementation Effort |
 |--------|-----------|----------------|--------------|----------------------|
@@ -208,45 +170,45 @@ This document captures recurring decision patterns specific to regulated softwar
 | Undo with audit log | 8 | 7 (controlled) | 8 (traceable) | 5 (moderate effort) |
 | Undo with approval workflow | 7 | 9 (very safe) | 7 (complex) | 3 (high effort) |
 
-**Key Principle:** In regulated environments, build auditability into the feature from day one. "We can't allow X because of compliance risk" often means "We haven't designed X to be auditable yet."
+**Key Principle:** In regulated or high-trust products, build auditability into the feature from day one. "We can't allow X because of compliance risk" often means "We haven't designed X to be auditable yet."
 
 ---
 
-## Scenario 7: Prioritization with Multiple Stakeholders
+## Scenario 6: Prioritization with Multiple Stakeholders
 
-**Pattern:** Product, Engineering, Sales, and Government Relations all want different things. Can't do everything.
+**Pattern:** Product, Engineering, Sales and Customer Success all want different things. You can't do everything.
 
-**Example:** 
-- Product: Wants mobile app for operators
-- Engineering: Wants to refactor database layer
-- Sales: Wants white-label option for new markets
-- Government Relations: Wants enhanced audit reporting
+**Example:**
+- Product: Wants a mobile app
+- Engineering: Wants to refactor the data layer
+- Sales: Wants a white-label option for new markets
+- Customer Success: Wants better reporting
 
 **Framework Recommendation:** RAPID + RICE + MoSCoW
 
 **Decision Process:**
 1. **Clarify decision roles (RAPID):**
-   - Recommend: Product Leadership (based on data)
-   - Agree: Engineering (on feasibility), Government Relations (on regulatory impact)
+   - Recommend: Product leadership (does the analysis and brings the proposal)
+   - Agree: Only those with formal sign-off, such as Legal or Security when the work touches their area
    - Perform: Engineering, Design
-   - Input: Sales, Customer Success, Agency Partners
+   - Input: Engineering (feasibility and cost), Sales, Customer Success, key customers
    - Decide: Head of Product or CEO
-   
+
 2. **Score each initiative with RICE:**
-   - Force each stakeholder to provide Reach, Impact, Confidence, Effort estimates
+   - Ask each stakeholder for Reach, Impact, Confidence and Effort estimates
    - Make assumptions explicit
-   
+
 3. **Apply MoSCoW to create tiers:**
-   - Must Have: Initiatives required for regulatory compliance or major market launches
+   - Must Have: Required for compliance or a committed launch
    - Should Have: High RICE scores, strategic value
    - Could Have: Good ideas, not urgent
    - Won't Have: Below the cut line for this quarter
-   
+
 4. **Hold a single decision meeting:**
-   - Decide person presents RICE scores + recommendation
-   - Agree stakeholders can veto if serious concerns
-   - Input stakeholders voice opinions but don't vote
-   - Decide person makes final call, documents rationale
+   - The Recommender presents the RICE scores and the recommendation
+   - Agree roles sign off or raise a blocking concern, which goes back to the Recommender or up to the Decider
+   - Input roles voice opinions but don't vote
+   - The Decider makes the final call and documents the rationale
 
 **Key Principle:** Decision paralysis comes from unclear authority. RAPID clarifies who owns the decision, which enables faster, clearer outcomes even when stakeholders disagree.
 
@@ -258,11 +220,11 @@ This document captures recurring decision patterns specific to regulated softwar
 
 | Situation | Framework |
 |-----------|-----------|
-| Crisis, outage, emergency | OODA Loop |
+| Fast iteration under time pressure | OODA Loop |
 | Unclear if problem is simple or complex | Cynefin |
-| Competing stakeholder priorities | Multi-Criteria Decision Matrix |
+| Competing options with several criteria | Multi-Criteria Decision Matrix |
 | Feature prioritization, roadmap planning | RICE |
 | Unclear user needs | Human-Centered Design |
 | Unclear decision ownership | RAPID |
 | Scope negotiation with stakeholders | MoSCoW |
-| Design tension (UX vs. feasibility) | NN/g Design Tradeoffs |
+| Design tension (UX vs. feasibility) | Common design tradeoffs (SKILL.md) |

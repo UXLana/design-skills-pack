@@ -17,6 +17,8 @@ source: "{{sync / PRD / epic this is built from}}"
   - Neutral, constructive tone. No commentary on who built something or seniority.
   - "Nothing committed" framing. Convert relative dates to absolute.
   - Color-code diagrams by lifecycle STATUS, not role. Proposed-layer nodes = dashed/advisory.
+  - Accessible by default: every diagram keeps its accTitle/accDescr lines; status is printed as a
+    word (legend lines below each diagram), never color alone.
   - Keep only the sections the source material supports. Delete the rest, including this comment.
 -->
 
@@ -68,6 +70,8 @@ source: "{{sync / PRD / epic this is built from}}"
 
 ```mermaid
 stateDiagram-v2
+  accTitle: {{TITLE}} lifecycle
+  accDescr: {{One or two sentences: the states in order, what moves an item between them, and which are Decided vs Open.}}
   [*] --> Created
   Created --> Assigned: {{trigger}}
   Assigned --> InProgress: {{trigger}}
@@ -81,6 +85,8 @@ stateDiagram-v2
   class Completed done
 ```
 
+*Status: green = Decided · amber = Open.*
+
 ---
 
 ## 05 · Flows
@@ -89,6 +95,8 @@ stateDiagram-v2
 
 ```mermaid
 flowchart TB
+  accTitle: {{Flow name}}, as-is
+  accDescr: {{One or two sentences describing the flow, including each step's status.}}
   C(("{{entry}}")):::entry
   STEP["{{step}}"]:::assess
   REV{"{{decision}}"}:::verify
@@ -101,10 +109,14 @@ flowchart TB
   classDef done fill:#e6f5ec,stroke:#1b8a4b,color:#0c5e31;
 ```
 
+*Status: amber = Open · teal = review step · green = Decided.*
+
 ### With {{layer}} assist  <!-- omit this whole subsection if there's no proposed layer -->
 
 ```mermaid
 flowchart TB
+  accTitle: {{Flow name}}, with {{layer}} assist
+  accDescr: {{The same flow, plus where each numbered touchpoint advises a step. The layer never advances state.}}
   C(("{{entry}}")):::entry
   STEP["{{step}}"]:::assess
   AI1["AI ①: {{touchpoint}}"]:::ai
@@ -119,6 +131,8 @@ flowchart TB
   classDef done fill:#e6f5ec,stroke:#1b8a4b,color:#0c5e31;
   classDef ai fill:#f3e8ff,stroke:#7c3aed,color:#4c1d95,stroke-dasharray:5 3;
 ```
+
+*Status: dashed purple = Proposed (advisory) · amber = Open · green = Decided.*
 
 <!-- Proposed-layer nodes (`:::ai`) are dashed and point INTO the workflow (advisory):
      the layer assists a step, it never advances state on its own. Number touchpoints

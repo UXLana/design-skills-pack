@@ -23,9 +23,9 @@ Extended explanations and case studies for decision-making frameworks.
 2. Categorize: Identify which known category this belongs to
 3. Respond: Apply the established best practice
 
-**Regulated-Software Examples:**
+**Product Examples:**
 - Updating a button label that users reported as confusing
-- Fixing a typo in regulatory text
+- Fixing a typo in help text
 - Changing a color that doesn't meet accessibility contrast requirements
 
 **Pitfall:** Over-simplifying complex problems. "This seems simple" doesn't mean it is.
@@ -43,10 +43,10 @@ Extended explanations and case studies for decision-making frameworks.
 2. Analyze: Involve experts, use analytical methods
 3. Respond: Choose from multiple good options
 
-**Regulated-Software Examples:**
-- Optimizing database query performance for regulatory reporting
-- Choosing between different barcode or RFID encoding schemes
-- Selecting an architecture for multi-jurisdiction data isolation
+**Product Examples:**
+- Optimizing database query performance for reporting
+- Choosing between search-indexing approaches
+- Selecting an architecture for multi-tenant data isolation
 
 **Key Insight:** Engineering-heavy problems often live here. Get the right experts in the room.
 
@@ -63,10 +63,10 @@ Extended explanations and case studies for decision-making frameworks.
 2. Sense: Look for emerging patterns
 3. Respond: Amplify what works, dampen what doesn't
 
-**Regulated-Software Examples:**
-- Launching a new workflow for inventory tracking (how will operators actually use it?)
-- Introducing a redesigned inspection interface (will it speed up or slow down audits?)
-- Rolling out a new feature to a diverse set of jurisdictions (adoption patterns unknown)
+**Product Examples:**
+- Launching a new onboarding workflow (how will people actually use it?)
+- Introducing a redesigned review screen (will it speed up or slow down reviews?)
+- Rolling out a new feature to a diverse set of customers (adoption patterns unknown)
 
 **Key Insight:** You can't analyze your way to the answer. You have to try things and learn. Use MVPs, A/B tests, phased rollouts.
 
@@ -83,10 +83,10 @@ Extended explanations and case studies for decision-making frameworks.
 2. Sense: Assess where stability exists
 3. Respond: Transform from chaos to complexity (where you can probe-sense-respond)
 
-**Regulated-Software Examples:**
-- Critical production system outage affecting multiple jurisdictions
+**Product Examples:**
+- Critical production outage affecting many customers
 - Security breach requiring immediate lockdown
-- Emergency regulatory change with 48-hour compliance deadline
+- Emergency legal or policy change with a 48-hour deadline
 
 **Key Insight:** This is crisis mode. Stabilize first, understand later. Don't try to analyze or plan—move fast to create stability, then assess.
 
@@ -102,7 +102,7 @@ Extended explanations and case studies for decision-making frameworks.
 2. Categorize each piece (Clear/Complicated/Complex/Chaotic)
 3. Apply the appropriate approach to each piece
 
-**Regulated-Software Example:**
+**Product Example:**
 - "Our system is too slow" could be:
   - Clear: Database indexes missing (apply best practice)
   - Complicated: Query optimization needed (analyze)
@@ -132,7 +132,7 @@ Still uncertain which applies?
 
 ## RICE Framework: Extended Guide
 
-**Origins:** Developed by Intercom's product team (Sean McBride) in 2016, now widely adopted in product management.
+**Origins:** Developed at Intercom (Sean McBride), now widely adopted in product management.
 
 **Core Insight:** Features compete for limited resources. RICE provides an objective scoring method to compare apples-to-oranges decisions.
 
@@ -147,10 +147,10 @@ Still uncertain which applies?
 - Use "per month" for operational improvements
 - Use "per year" for strategic initiatives
 
-**Regulated-Software Examples:**
-- New transfer workflow: "8,000 transfers per quarter across all jurisdictions"
-- Improved barcode scanning UI: "45,000 scan events per quarter"
-- Bulk record creation feature: "600 operator accounts × 12 uses per quarter = 7,200 uses"
+**Product Examples:**
+- New sharing workflow: "8,000 shares per quarter across all customers"
+- Improved search UI: "45,000 searches per quarter"
+- Bulk record creation feature: "600 accounts × 12 uses per quarter = 7,200 uses"
 
 **Common Mistake:** Counting "all users" when only a subset actually encounters the feature. Be specific about the user segment.
 
@@ -165,8 +165,8 @@ Still uncertain which applies?
 - **0.5 = Low Impact:** Minor improvement, nice-to-have
 - **0.25 = Minimal Impact:** Barely noticeable, edge case
 
-**Regulated-Software Examples:**
-- Batch recall feature for contaminated product: **3** (Massive - public health and legal compliance)
+**Product Examples:**
+- Bulk-fix tool for a data error affecting every customer: **3** (Massive - removes hours of manual cleanup)
 - Auto-save on form inputs: **1** (Medium - prevents data loss frustration)
 - Tooltip explaining an ID format: **0.5** (Low - minor education value)
 
@@ -181,7 +181,7 @@ Still uncertain which applies?
 - **80% = Medium Confidence:** Some data, reasonable estimates, few unknowns
 - **50% = Low Confidence:** Mostly guessing, many unknowns, high uncertainty
 
-**Regulated-Software Examples:**
+**Product Examples:**
 - Optimizing existing high-traffic page: **100%** (we have analytics)
 - New feature inspired by competitor: **80%** (educated guess based on their success)
 - Experimental workflow with unclear adoption: **50%** (just a hypothesis)
@@ -203,19 +203,19 @@ Still uncertain which applies?
 - Documentation
 - Deployment/rollout coordination
 
-**Regulated-Software Examples:**
+**Product Examples:**
 - Simple UI text change: **0.1 person-months** (few hours)
 - New form with validation: **0.5 person-months** (2 weeks)
-- Complex multi-jurisdiction reporting feature: **3 person-months** (one engineer for 3 months)
+- Complex multi-region reporting feature: **3 person-months** (one engineer for 3 months)
 - Major system re-architecture: **24 person-months** (4 engineers for 6 months)
 
-**Common Mistake:** Underestimating effort by forgetting testing, edge cases, per-jurisdiction variations, and deployment complexity.
+**Common Mistake:** Underestimating effort by forgetting testing, edge cases, per-customer variations, and deployment complexity.
 
 ### RICE Calculation Example
 
-**Feature:** Automated batch ID generation from parent records
+**Feature:** Auto-filled record IDs from the parent record
 
-- **Reach:** 12,000 batch creation events per quarter (across all users)
+- **Reach:** 12,000 record-creation events per quarter (across all users)
 - **Impact:** 1 (Medium - saves manual typing, reduces errors)
 - **Confidence:** 80% (we have usage data, but uncertain about error reduction impact)
 - **Effort:** 1.5 person-months (moderate complexity)
@@ -233,7 +233,7 @@ Still uncertain which applies?
 - Market timing
 
 **When to Override RICE:** Framework provides guidance, not dogma. Valid reasons to deprioritize a high-RICE feature:
-- Regulatory deadline trumps score
+- A contractual or regulatory deadline trumps the score
 - Strategic bet on long-term positioning
 - Engineering capacity constraints
 - External dependencies block progress
@@ -258,7 +258,7 @@ When multiple factors compete and stakeholders disagree, a weighted decision mat
 - Do neither and invest in C instead
 - Do hybrid: combine elements of A and B
 
-**Regulated-Software Example:**
+**Product Example:**
 
 *Problem: Dashboard performance is slow. What to do?*
 
@@ -281,14 +281,14 @@ Options to evaluate:
 - **Timeline:** Time to market, regulatory deadlines
 - **Cross-Functional Impact:** Affects other teams, requires coordination
 
-**Regulated-Software Example for Dashboard Performance:**
+**Example criteria for dashboard performance:**
 
-Criteria:
 1. User experience improvement (perceived speed)
 2. Engineering effort (person-weeks)
 3. Technical debt impact (future maintainability)
-4. Compliance risk (any risk to data integrity/auditability?)
-5. Multi-jurisdiction applicability (works for all jurisdictions?)
+4. Works for every customer segment (small accounts and the largest ones)
+
+**And one gate, not a criterion:** compliance risk. If an option could show wrong or stale numbers in a report someone relies on for an audit, it's out, however well it scores. A criterion you'd call "non-negotiable" or "disqualifying" is a gate: apply it before scoring, because a weight lets a high score elsewhere buy back a disqualifying risk. Here, caching and the hybrid pass the gate only if cached figures show when they were last refreshed; assume they do.
 
 #### Step 3: Weight Each Criterion
 
@@ -300,67 +300,66 @@ Criteria:
 - User experience improvement: **9** (primary driver)
 - Engineering effort: **7** (resource-constrained team)
 - Technical debt impact: **6** (maintenance burden matters)
-- Compliance risk: **10** (non-negotiable, any risk is disqualifying)
-- Multi-jurisdiction applicability: **8** (must work everywhere)
+- Works for every customer segment: **8** (must work everywhere)
 
-**Total Weight:** 40
+**Total Weight:** 30, so the best possible score is 300.
 
 #### Step 4: Score Each Option on Each Criterion
 
-**Scale:** 1-10, where 10 = best possible outcome, 1 = worst
+**Scale:** 1-10, where 10 = best possible outcome, 1 = worst (for Effort, 10 = least effort)
 
 **Be Honest:** Not every option scores well on every criterion. That's the point.
 
 **Example Scoring:**
 
-| Option | User Experience (9) | Effort (7) | Tech Debt (6) | Compliance Risk (10) | Multi-Jurisdiction (8) |
-|--------|---------------------|------------|---------------|----------------------|-----------------|
-| 1. Client-side caching | 8 | 6 | 4 | 9 | 10 |
-| 2. Server optimization | 9 | 4 | 8 | 10 | 10 |
-| 3. Reduce granularity | 5 | 9 | 7 | 10 | 8 |
-| 4. Hybrid (cache + optimize) | 9 | 3 | 5 | 9 | 10 |
-| 5. Do nothing | 2 | 10 | 10 | 10 | 10 |
+| Option | User Experience (9) | Effort (7) | Tech Debt (6) | Every Segment (8) |
+|--------|---------------------|------------|---------------|-------------------|
+| 1. Client-side caching | 8 | 6 | 4 | 10 |
+| 2. Server optimization | 9 | 4 | 8 | 10 |
+| 3. Reduce granularity | 5 | 9 | 7 | 8 |
+| 4. Hybrid (cache + optimize) | 9 | 3 | 5 | 10 |
+| 5. Do nothing | 2 | 10 | 10 | 10 |
 
 #### Step 5: Calculate Weighted Scores
 
-**Formula:** (Criterion Weight × Option Score) for each cell, then sum across row
+**Formula:** (Criterion Weight × Option Score) for each cell, then sum across the row
 
 **Example:**
 
 **Option 2 (Server optimization):**
-- (9 × 9) + (7 × 4) + (6 × 8) + (10 × 10) + (8 × 10)
-- = 81 + 28 + 48 + 100 + 80
-- = **337**
+- (9 × 9) + (7 × 4) + (6 × 8) + (8 × 10)
+- = 81 + 28 + 48 + 80
+- = **237**
 
-Full table:
+Full table (re-derive these before trusting them; arithmetic slips are common):
 
 | Option | Weighted Score |
 |--------|----------------|
-| 1. Client-side caching | 298 |
-| 2. Server optimization | **337** ← Winner |
-| 3. Reduce granularity | 298 |
-| 4. Hybrid | 312 |
-| 5. Do nothing | 318 |
+| 1. Client-side caching | 218 |
+| 2. Server optimization | **237** ← Highest |
+| 3. Reduce granularity | 214 |
+| 4. Hybrid | 212 |
+| 5. Do nothing | 228 |
 
 #### Step 6: Interpret Results + Qualitative Overlay
 
-**Quantitative Winner:** Server optimization (337)
+**Quantitative leader:** Server optimization (237).
 
-**But Consider:**
-- Options 2, 4, and 5 are within 8% of each other—treat as a three-way tie
-- "Do nothing" scores surprisingly high because it has zero compliance risk and zero effort
-- Hybrid option nearly matches server optimization but takes 3× the effort
+**But look at what the numbers are saying:**
+- **"Do nothing" comes second (228), within 4% of the leader.** It loses heavily on user experience but wins every point on effort and technical debt. That's the lesson of this example: when the cheapest option nearly wins, either the slowness really isn't costing much (and doing nothing is a legitimate answer), or the criteria leave out the cost of the problem itself, such as support tickets or lost renewals. Find out which before deciding.
+- **The hybrid comes last (212).** It matches server optimization on user experience (9 vs 9) but scores worst on effort (3 vs 4) and adds caching's technical debt.
+- Caching (218) and reducing granularity (214) trail because of technical debt and a weaker user-experience gain, respectively.
 
-**Qualitative Decision:**
-Given the team's limited bandwidth and the small score difference, **server optimization** is the clear choice: best user experience improvement, no compliance risk, reasonable effort, and improves technical debt rather than adding to it.
+**Qualitative decision:**
+If the slowness is costing users (check support tickets and usage first), choose **server optimization**: the biggest user-experience gain, it reduces technical debt rather than adding to it, and it passes the compliance gate outright.
 
-Document: "We chose server optimization over hybrid approach despite slightly lower score because hybrid requires 3× the engineering effort for only marginal UX improvement. Client-side caching was ruled out due to technical debt concerns."
+Document: "We chose server optimization (237) over doing nothing (228) because support data shows the slow dashboard costs users real time each week, which the matrix didn't capture. The hybrid was ruled out: no better user experience for the most effort. Caching passed the compliance gate only with refresh timestamps and added technical debt."
 
 ---
 
 ## Additional Frameworks: Quick Reference
 
-### Design Thinking (Nielsen Norman Group / IDEO)
+### Design Thinking (Nielsen Norman Group's six-phase model)
 
 **Six Phases:**
 1. **Empathize:** Observe users, understand context
@@ -376,7 +375,7 @@ Document: "We chose server optimization over hybrid approach despite slightly lo
 
 ### OODA Loop (Observe-Orient-Decide-Act)
 
-**Origin:** Military strategist John Boyd, 1960s
+**Origin:** John Boyd, US Air Force strategist
 
 **When to Use:** Fast-moving crises, rapid iteration needed
 

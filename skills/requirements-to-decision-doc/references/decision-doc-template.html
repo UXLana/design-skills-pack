@@ -8,13 +8,16 @@
   :root{
     --navy:#0a2a47;--navy2:#0c3556;--blue:#1f6fe5;--blue-ink:#1a56c4;--blue-soft:#e8f0fe;
     --ink:#16202c;--muted:#5b6b7c;--line:#e3e8ef;--bg:#f4f6f9;--card:#fff;
-    --assess:#c2740c;--assess-bg:#fff3e0;--action:#7c3aed;--action-bg:#f1e9fe;
-    --done:#1b8a4b;--done-bg:#e6f5ec;--na:#64748b;--na-bg:#eef1f5;--reject:#d23b3b;--reject-bg:#fdeaea;
+    --assess:#9a5b06;--assess-bg:#fff3e0;--action:#7c3aed;--action-bg:#f1e9fe;
+    --done:#137a40;--done-bg:#e6f5ec;--na:#64748b;--na-bg:#eef1f5;--reject:#d23b3b;--reject-bg:#fdeaea;
     --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
+  /* Contrast (WCAG 2.2 AA, checked): pills 4.80 / 5.78 / 4.94 / 4.84:1 on their backgrounds;
+     matrix yes 5.40, conditional 5.42, no 4.83:1 on white. Re-check any color you change. */
   *{box-sizing:border-box;}
   body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55;font-size:15px;}
   a{color:var(--blue-ink);text-decoration:none;}a:hover{text-decoration:underline;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
   .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
   header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:50px 0 42px;}
   header .kicker{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#8fb4e6;font-weight:700;}
@@ -27,7 +30,7 @@
   nav.toc .wrap{display:flex;gap:4px;flex-wrap:wrap;padding:10px 24px;align-items:center;}
   nav.toc a{font-size:12.5px;font-weight:600;color:var(--muted);padding:6px 11px;border-radius:7px;}
   nav.toc a:hover{background:var(--blue-soft);color:var(--blue-ink);text-decoration:none;}
-  section{padding:42px 0 8px;} h2{font-size:22px;font-weight:800;margin:0 0 6px;} h2 .num{color:var(--blue);margin-right:8px;}
+  section{padding:42px 0 8px;} h2{font-size:22px;font-weight:800;margin:0 0 6px;} h2 .num{color:var(--blue-ink);margin-right:8px;}
   .lead{color:var(--muted);max-width:860px;margin:0 0 22px;}
   .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
@@ -36,13 +39,13 @@
   th{background:#f7f9fc;text-align:left;padding:11px 13px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line);}
   td{padding:11px 13px;border-bottom:1px solid #eef2f7;vertical-align:top;}tr:last-child td{border-bottom:0;}
   .matrix td,.matrix th{text-align:center;}.matrix td:first-child,.matrix th:first-child{text-align:left;}
-  .yes{color:var(--done);font-weight:700;}.no{color:#c2c9d3;}.cond{color:var(--assess);font-weight:700;}
+  .yes{color:var(--done);font-weight:700;}.no{color:#6b7280;}.cond{color:var(--assess);font-weight:700;}
   .req td:first-child{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--blue-ink);white-space:nowrap;font-weight:700;}
   .callout{border-radius:12px;padding:16px 18px;margin:14px 0;border:1px solid;}
   .c-warn{background:#fff8ec;border-color:#f0d9a8;}.c-info{background:var(--blue-soft);border-color:#cfe0fb;}.c-ok{background:var(--done-bg);border-color:#bfe6cd;}
   .callout>b:first-child{display:block;margin-bottom:4px;}
   .role{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-top:3px solid var(--blue);}
-  .role h4{margin:0 0 4px;font-size:14px;}.role p{margin:0;font-size:12.5px;color:var(--muted);}
+  .role h3{margin:0 0 4px;font-size:14px;}.role p{margin:0;font-size:12.5px;color:var(--muted);}
   .chip{display:inline-block;white-space:nowrap;font-size:12px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:#fbfdff;}
   .diagram{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;}
   .diagram h3{margin:0 0 4px;font-size:15px;}.diagram .cap{color:var(--muted);font-size:13px;margin:0 0 12px;}
@@ -56,7 +59,9 @@
   .dg-editor textarea{width:100%;min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.45;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfdff;color:var(--ink);}
   .dg-toggle{display:inline-flex;margin:2px 0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
   .dg-seg{font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);background:#fff;border:0;border-right:1px solid var(--line);padding:6px 15px;cursor:pointer;}
-  .dg-seg:last-child{border-right:0;}.dg-seg.active{background:var(--action);color:#fff;}
+  .dg-seg:last-child{border-right:0;}.dg-seg[aria-pressed="true"]{background:var(--action);color:#fff;}
+  .dg-legend{font-size:12.5px;color:var(--muted);margin:8px 0 0;}
+  button:focus-visible,a:focus-visible,textarea:focus-visible{outline:2px solid var(--blue-ink);outline-offset:2px;}
   footer{padding:34px 0 70px;color:var(--muted);font-size:12.5px;}
   @media(max-width:820px){.grid4{grid-template-columns:1fr;}}
 </style>
@@ -64,10 +69,15 @@
 <body>
 <!--
   TEMPLATE NOTES (delete in final output):
-  - Fill {{TITLE}} and {{DATE}}. Keep only the sections the source material supports.
-  - Pills: p-ok=Decided, p-info=Assumed, p-med=Open, p-prop=Proposed.
-  - For a flow with a Proposed variant, duplicate the .dg-view block (As-is + With-X) inside .diagram and add the .dg-toggle. Otherwise omit the toggle and use one .dg-view.
+  - Fill {{TITLE}} and {{DATE}}. Keep only the sections the source material supports; renumber and
+    remove the matching TOC link when you drop one. Numbering matches decision-doc-template.md.
+  - Pills: p-ok=Decided, p-info=Assumed, p-med=Open, p-prop=Proposed. The status word is always printed.
+  - Matrix cells: keep the aria-hidden glyph + .sr-only word pattern (Yes / Conditional / No).
+  - Every Mermaid source starts with accTitle: and accDescr: lines (its accessible name and description).
+  - For a flow with a Proposed variant, keep both .dg-view blocks and the .dg-toggle. Otherwise delete the
+    toggle and the second .dg-view.
   - Diagram color-coding = lifecycle status, not role. Proposed-layer nodes: dashed, advisory.
+  - Re-check contrast for any color you change (text 4.5:1, diagram strokes/lines 3:1).
 -->
 <header><div class="wrap">
   <span class="kicker">Design Sketch · for Engineering review</span>
@@ -84,17 +94,18 @@
   </div>
 </div></header>
 
-<nav class="toc"><div class="wrap">
+<nav class="toc" aria-label="Contents"><div class="wrap">
   <a href="#scope">Scope</a>
   <a href="#roles">Roles</a>
   <a href="#matrix">Permission matrix</a>
   <a href="#lifecycle">Lifecycle</a>
   <a href="#flow">Flows</a>
+  <a href="#layer">{{LAYER}} assist</a>
   <a href="#reqs">Requirements</a>
   <a href="#questions">Open questions</a>
 </div></nav>
 
-<div class="wrap">
+<main class="wrap">
 
   <section id="scope">
     <h2><span class="num">01</span>Scope</h2>
@@ -105,37 +116,100 @@
     <div class="callout c-warn"><b>The hard constraint to design around</b>{{CONSTRAINT}}</div>
   </section>
 
+  <section id="roles">
+    <h2><span class="num">02</span>Roles</h2>
+    <div class="grid4">
+      <div class="role"><h3>{{ROLE}}</h3><p>{{RESPONSIBILITY}}</p></div>
+      <!-- One card per role. Note any base/observer role explicitly. -->
+    </div>
+  </section>
+
+  <section id="matrix">
+    <h2><span class="num">03</span>Permission matrix</h2>
+    <p class="lead">✓ can · ▲ conditional, needs a ruling · · cannot. Every ▲ is also an Open row in §07.</p>
+    <table class="matrix">
+      <thead><tr><th scope="col">Action</th><th scope="col">{{ROLE A}}</th><th scope="col">{{ROLE B}}</th><th scope="col">{{ROLE C}}</th></tr></thead>
+      <tbody>
+        <tr>
+          <th scope="row" style="text-transform:none;font-size:13.5px;color:var(--ink);background:none;">{{ACTION}}</th>
+          <td><span class="yes" aria-hidden="true">✓</span><span class="sr-only">Yes</span></td>
+          <td><span class="cond" aria-hidden="true">▲</span><span class="sr-only">Conditional</span></td>
+          <td><span class="no" aria-hidden="true">·</span><span class="sr-only">No</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="lifecycle">
+    <h2><span class="num">04</span>Lifecycle</h2>
+    <!-- Paste a DIAGRAM BLOCK (below) with a stateDiagram-v2 source: states, transitions, triggers. -->
+  </section>
+
+  <section id="flow">
+    <h2><span class="num">05</span>Flows</h2>
+    <!-- Paste a DIAGRAM BLOCK (below). Keep the toggle only when a Proposed layer exists. -->
+  </section>
+
+  <section id="layer">
+    <h2><span class="num">06</span>{{LAYER}} assist <span class="pill p-prop">Proposed</span></h2>
+    <p class="lead">Proposed layer for review, not decided. Principle: {{LAYER}} drafts and suggests; a human decides.</p>
+    <!-- Touchpoint cards numbered ① ② ③ to match the diagram, then an R-{{LAYER}}-n table, all Proposed.
+         Delete this section and its TOC link if there is no proposed layer. -->
+  </section>
+
   <section id="reqs">
-    <h2><span class="num">06</span>First-round requirements</h2>
+    <h2><span class="num">07</span>First-round requirements</h2>
     <h3 style="font-size:15px;margin:18px 0 8px;">{{GROUP}}</h3>
-    <table class="req"><tbody>
-      <tr><td>R-{{GROUP}}-1</td><td>{{REQUIREMENT}}</td><td><span class="pill p-ok">Decided</span></td></tr>
-      <tr><td>R-{{GROUP}}-2</td><td>{{OPEN QUESTION}}</td><td><span class="pill p-med">Open</span></td></tr>
-    </tbody></table>
+    <table class="req">
+      <thead><tr><th scope="col">ID</th><th scope="col">Requirement</th><th scope="col">Status</th></tr></thead>
+      <tbody>
+        <tr><td>R-{{GROUP}}-1</td><td>{{REQUIREMENT}}</td><td><span class="pill p-ok">Decided</span></td></tr>
+        <tr><td>R-{{GROUP}}-2</td><td>{{OPEN QUESTION}}</td><td><span class="pill p-med">Open</span></td></tr>
+        <tr><td>R-{{GROUP}}-3</td><td>{{REASONABLE DEFAULT}}</td><td><span class="pill p-info">Assumed</span></td></tr>
+      </tbody>
+    </table>
   </section>
 
   <section id="questions">
-    <h2><span class="num">07</span>Open questions — by owner</h2>
-    <!-- Two cards: product gaps / engineering feasibility -->
+    <h2><span class="num">08</span>Open questions — by owner</h2>
+    <h3 style="font-size:15px;margin:18px 0 8px;">Product / requirements gaps</h3>
+    <ul><li>{{OPEN PRODUCT DECISION}} (R-ID)</li></ul>
+    <h3 style="font-size:15px;margin:18px 0 8px;">Engineering feasibility</h3>
+    <ul><li>{{OPEN TECHNICAL QUESTION}} (R-ID)</li></ul>
   </section>
 
-  <!-- DIAGRAM BLOCK: copy into #lifecycle / #flow sections.
+  <!-- DIAGRAM BLOCK: copy into #lifecycle / #flow.
   <div class="diagram">
     <h3>{{DIAGRAM TITLE}}</h3>
     <p class="cap">{{CAPTION}}</p>
-    <div class="dg-toggle"><button type="button" class="dg-seg active" data-view="asis">As-is</button><button type="button" class="dg-seg" data-view="ai">With AI assist</button></div>
-    <div class="dg-view" data-view="asis"><pre class="mermaid">{{MERMAID_ASIS}}</pre></div>
-    <div class="dg-view" data-view="ai"><pre class="mermaid">{{MERMAID_AI}}</pre></div>
+    <div class="dg-toggle" role="group" aria-label="Diagram view">
+      <button type="button" class="dg-seg" data-view="asis" aria-pressed="true">As-is</button><button type="button" class="dg-seg" data-view="ai" aria-pressed="false">With AI assist</button>
+    </div>
+    <div class="dg-view" data-view="asis"><pre class="mermaid">
+flowchart TB
+  accTitle: {{DIAGRAM TITLE}}, as-is
+  accDescr: {{ONE OR TWO SENTENCES DESCRIBING THE FLOW, INCLUDING EACH STEP'S STATUS}}
+  {{MERMAID_ASIS}}
+    </pre></div>
+    <div class="dg-view" data-view="ai"><pre class="mermaid">
+flowchart TB
+  accTitle: {{DIAGRAM TITLE}}, with AI assist
+  accDescr: {{SAME FLOW, PLUS WHERE EACH NUMBERED AI TOUCHPOINT ADVISES A STEP}}
+  {{MERMAID_AI}}
+    </pre></div>
+    <p class="dg-legend">Status: green = Decided · amber = Open · dashed purple = Proposed (advisory).</p>
   </div>
   -->
 
-</div>
+</main>
 
 <footer><div class="wrap">Working design sketch · last edited {{DATE}}. Assumptions flagged; not committed requirements.</div></footer>
 
+<div id="dg-status" class="sr-only" role="status" aria-live="polite"></div>
+
 <script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad:false, securityLevel:'loose', flowchart:{ htmlLabels:true, useMaxWidth:true } });
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad:false, flowchart:{ useMaxWidth:true } });
   document.querySelectorAll('.mermaid').forEach(el => { el.dataset.src = el.textContent.trim(); });
   await mermaid.run();
   addDiagramTools();
@@ -145,25 +219,30 @@
     document.querySelectorAll('.diagram').forEach(dia => {
       const toggle = dia.querySelector('.dg-toggle'); if(!toggle) return;
       const views = dia.querySelectorAll('.dg-view'), segs = toggle.querySelectorAll('.dg-seg');
-      const show = v => { views.forEach(x=>x.style.display=(x.dataset.view===v?'':'none')); segs.forEach(s=>s.classList.toggle('active',s.dataset.view===v)); };
+      const show = v => {
+        views.forEach(x=>x.style.display=(x.dataset.view===v?'':'none'));
+        segs.forEach(s=>s.setAttribute('aria-pressed', String(s.dataset.view===v)));
+      };
       segs.forEach(s=>s.addEventListener('click',()=>show(s.dataset.view))); show('asis');
     });
   }
   function addDiagramTools(){
-    const copyIcon='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-    const checkIcon='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
-    document.querySelectorAll('.mermaid').forEach(el => {
+    const status=document.getElementById('dg-status');
+    const copyIcon='<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    const checkIcon='<svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    document.querySelectorAll('.mermaid').forEach((el, i) => {
       if (el.dataset.toolsAdded) return; el.dataset.toolsAdded='1';
       const original = el.dataset.src||'';
       const bar=document.createElement('div'); bar.className='dg-tools';
-      const viewBtn=document.createElement('button'); viewBtn.type='button'; viewBtn.className='dg-btn'; viewBtn.textContent='View code'; bar.append(viewBtn);
-      const ed=document.createElement('div'); ed.className='dg-editor';
-      const copyBtn=document.createElement('button'); copyBtn.type='button'; copyBtn.className='dg-btn dg-copy'; copyBtn.innerHTML=copyIcon; copyBtn.setAttribute('aria-label','Copy code'); copyBtn.title='Copy code';
-      const ta=document.createElement('textarea'); ta.value=original; ta.readOnly=true; ta.spellcheck=false;
+      const ed=document.createElement('div'); ed.className='dg-editor'; ed.id='dg-code-'+i;
+      const viewBtn=document.createElement('button'); viewBtn.type='button'; viewBtn.className='dg-btn'; viewBtn.textContent='View code';
+      viewBtn.setAttribute('aria-expanded','false'); viewBtn.setAttribute('aria-controls', ed.id); bar.append(viewBtn);
+      const copyBtn=document.createElement('button'); copyBtn.type='button'; copyBtn.className='dg-btn dg-copy'; copyBtn.innerHTML=copyIcon; copyBtn.setAttribute('aria-label','Copy diagram code'); copyBtn.title='Copy code';
+      const ta=document.createElement('textarea'); ta.value=original; ta.readOnly=true; ta.spellcheck=false; ta.setAttribute('aria-label','Diagram source');
       ed.append(copyBtn, ta);
       el.parentNode.insertBefore(bar, el); el.parentNode.insertBefore(ed, el);
-      viewBtn.addEventListener('click',()=>{ const open=ed.style.display==='block'; ed.style.display=open?'none':'block'; viewBtn.textContent=open?'View code':'Hide'; });
-      copyBtn.addEventListener('click',async()=>{ try{await navigator.clipboard.writeText(ta.value);}catch{ta.select();document.execCommand('copy');} copyBtn.innerHTML=checkIcon; copyBtn.classList.add('copied'); setTimeout(()=>{copyBtn.innerHTML=copyIcon;copyBtn.classList.remove('copied');},1400); });
+      viewBtn.addEventListener('click',()=>{ const open=ed.style.display==='block'; ed.style.display=open?'none':'block'; viewBtn.textContent=open?'View code':'Hide code'; viewBtn.setAttribute('aria-expanded', String(!open)); });
+      copyBtn.addEventListener('click',async()=>{ try{await navigator.clipboard.writeText(ta.value);}catch{ta.select();document.execCommand('copy');} copyBtn.innerHTML=checkIcon; copyBtn.classList.add('copied'); status.textContent='Diagram code copied'; setTimeout(()=>{copyBtn.innerHTML=copyIcon;copyBtn.classList.remove('copied');status.textContent='';},1400); });
     });
   }
 </script>

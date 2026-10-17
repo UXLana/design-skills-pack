@@ -17,13 +17,18 @@ Turn a running prototype into a single `.html` file a non-technical stakeholder 
 |---|---|
 | **Vite** (SPA) | ✅ Proven end to end |
 | **Next.js** | ❌ **UNPROVEN — do not attempt.** No `vite-plugin-singlefile` equivalent; static export emits a folder and client routing from disk is untested. Say so and stop. |
+| **Anything else** (Create React App or other webpack setups, Parcel, and Vite-based frameworks with server rendering such as React Router framework mode, Remix, Astro, SvelteKit, Nuxt) | ❌ **UNPROVEN — do not attempt.** Say so and stop. |
 
 ```bash
 # Detect before promising anything
-grep -q '"next"' package.json && echo "NEXT — refuse" || ls vite.config.* 2>/dev/null
+if grep -q '"next"' package.json; then echo "Next.js: refuse"
+elif [ -n "$(find . -maxdepth 1 -name 'vite.config.*' -print -quit)" ]; then
+  if grep -Eq '"(@react-router/dev|@remix-run/dev|astro|@sveltejs/kit|nuxt|vike|@tanstack/react-start)"' package.json
+  then echo "Vite-based framework: unproven, stop"; else echo "Plain Vite SPA: proceed"; fi
+else echo "Not Vite: unproven, stop"; fi
 ```
 
-Refusing is the correct output for Next.js. Do not improvise a path nobody has tested — the file gets forwarded to people who cannot debug it.
+Refusing is the correct output for anything other than a plain Vite single-page app. Do not improvise a path nobody has tested — the file gets forwarded to people who cannot debug it.
 
 ## The four things `file://` breaks
 
@@ -33,7 +38,7 @@ Work through all four. Three are mechanical; the second fails **silently**.
 
 2. **⚠️ Query params move INTO the hash.** Anything reading `new URLSearchParams(window.location.search)` now gets an empty string and falls back to its default. **Nothing throws and nothing logs** — the UI looks fine while every deep link lands on the wrong state. Read the query from the hash first, then fall back to `search`. Write it back the same way.
 
-3. **Assets above the inline threshold.** They ship as a second file the recipient never receives, and the only symptom is a broken image.
+3. **Assets the plugin can't inline.** Its recommended config inlines assets imported through JS or CSS, but files in `public/` and assets referenced with `new URL(…, import.meta.url)` still ship as separate files the recipient never receives. The only symptom is a broken image.
 
 4. **Root-absolute paths** in raw `<a href>`, `window.location.href` and `window.open` resolve to the filesystem root. Router `<Link>`s are fine — they rewrite themselves.
 
@@ -44,12 +49,12 @@ Work through all four. Three are mechanical; the second fails **silently**.
 - **`assetsInlineLimit` will not inline an asset Vite has already compiled into `new URL(…, import.meta.url)`** — not at `Infinity`, not with the predicate form. Import it with **`?raw`** and build a data URI at the source instead. That works in both builds and removes the branch.
 - **`transformIndexHtml` must run at `order: 'pre'`.** Vite collects `index.html`'s assets *before* the normal transform stage, so stripping a favicon link later removes the tag and still emits the file — two outputs instead of one.
 
-`vite-plugin-singlefile` inlines JS and CSS. It does **not** inline assets or touch the router. Those are yours.
+`vite-plugin-singlefile` inlines JS, CSS and imported assets (its recommended build config, on by default, sets `assetsInlineLimit` to inline every imported asset and `base` to `./`). It does **not** inline `public/` files or `new URL()` assets, and it doesn't touch the router. Those are yours.
 
 ## Workflow
 
 1. Detect the bundler. Refuse Next.js.
-2. Add `vite-plugin-singlefile` (v2+ for Vite 7) as a devDependency and a `build:standalone` script on a **separate Vite mode**, so the normal `build` is untouched.
+2. Check the `vite` major version in package.json, then add `vite-plugin-singlefile` (2.3+, which supports Vite 5.4 through 8) as a devDependency and a `build:standalone` script on a **separate Vite mode**, so the normal `build` is untouched.
 3. Create the single standalone module; fix all four breakages.
 4. Decide what the file opens on — the recipient double-clicks with no URL, so the default matters. **Resolve any variant by value, never by index**; indices shift whenever a variant is inserted.
 5. Build. Confirm the output is **exactly one file** and report its real byte size.
@@ -96,6 +101,7 @@ Opens on: <default state>
 
 ### At handover
 Stopgap for hosting, not permissions — cannot be access-controlled once sent.
+If the email bounces or the attachment is stripped (some company mail filters block .html files), zip it or share it through a drive link. Ask the recipient to download the file before opening it.
 ```
 
 ## Related

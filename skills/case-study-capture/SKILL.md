@@ -1,6 +1,14 @@
 ---
 name: case-study-capture
-description: Capture or reconstruct an evidence-based case study, interviewing for problems, decisions, personal influence and outcomes before shaping a clear narrative. Use for writing or improving a project case study, recording its decisions during work, or preparing a case-study handoff. Website implementation is a separate requested deliverable.
+description: >-
+  Capture or reconstruct an evidence-based design case study. It interviews one question at a time
+  for the real problem, the decisions, the author's own influence and the supported outcome, and
+  labels each claim by its evidence. It keeps confidential material out of public drafts and writes
+  a clear narrative or handoff without inventing metrics or a smoother story. Use when the user says
+  "write a case study", "portfolio case study", "UX case study for this project", "turn this project
+  into a case study", "help me tell the story of this work", or wants to record decisions as the
+  work happens for a later case study. Building the portfolio page itself is a separate step the
+  user must ask for. Not for LinkedIn or blog posts (content-writer).
 ---
 
 # Case Study Capture
@@ -20,18 +28,24 @@ Use the current request and existing authorization; do not repeat questions alre
 - **Narrative or handoff:** interview only the important gaps, then deliver usable writing and
   references. A document-only handoff is complete work; it does not require a webpage.
 - **Website implementation:** only when requested, work through the receiving repo's current
-  scope, route, components and checks. A later document-only request stops that implementation.
+  scope, route, components and checks. If the user later asks for the document only, stop the page work.
 
 Capture operates during the active session; it is not a background watcher. On resume, read the
-latest scope and next action before older plans. An audit of this skill does not start a project interview.
+latest scope and next action before older plans.
 
 ## Keep evidence and presentation separate
 
-Use the author's designated draft location first, such as an existing `case-drafts` inbox. Otherwise,
+Use the author's designated draft location first, such as a drafts folder they already use. Otherwise,
 use `CASE_STUDY_<SLUG>.md` in the project root only when its contents are appropriate for that repository. For confidential work, keep raw evidence and sensitive quotations in an authorized
 private location outside Git; put only cleared material in the presentation draft or handoff.
 A private repository is still a disclosure destination. Do not copy restricted source, customer
 records, internal links, credentials or private career context into a PR, public asset or memory.
+
+**Before anything goes public**, check the presentation draft with the author:
+- Client, product and people names are removed or approved, and anonymized consistently ("a national retailer").
+- Real figures are replaced with ranges or relative change ("cut review time by about a third") unless the author has permission to publish them.
+- Screenshots are blurred, recreated with fake data, or cleared by whoever owns them.
+- The author confirms they're allowed to show this work (NDA, employer or client policy).
 
 Record the current deliverable, approved scope, evidence location, last update and next action.
 For claims, distinguish **owner-reported**, **contemporaneous record**, **observed implementation**,
@@ -81,6 +95,12 @@ and collaborators clear. Develop the consequential decisions in connected, plain
 This is a reasoning aid, not a mandatory heading sequence or page layout. Select what helps the reader
 understand the work; do not recount every activity or make up an alternative to fill a slot.
 
+If the author has no template or existing site structure, offer this optional outline and adapt it:
+context (product, audience, timeframe) · the problem and how it was known · the author's role and the
+team · one to three consequential decisions, each as problem → options → influence → choice → change ·
+outcome and its evidence · limits, and what the author would do differently. When a site or template
+exists, use its structure instead.
+
 Connect claims to the artifacts or observations that support them. Explain technical detail only
 when it clarifies a constraint or decision. Attribute reported outcomes and label hypotheses. Retain
 uncertainty and shared credit. A transferable lesson must come from something the project demonstrated.
@@ -95,8 +115,8 @@ exhibits. Record which source/version each exhibit represents, its data and acti
 revision actually verified. Do not label scenarios or loading/empty/error states as historical versions.
 
 For requested page work, inspect the destination's current route, component APIs and theme. Reuse
-its approved template and provide content as data when supported. Do not hardcode an older component
-catalog or create a new diagram skill. Honor the user's diagram format; attach evidence independently
+its approved template and provide content as data when supported. Use the site's current components,
+not an older list of them, and the diagram tools already available. Honor the user's diagram format; attach evidence independently
 of the rendering technology. A read-only receiving repo gets a handoff unless editing it is authorized.
 
 ## Completion check

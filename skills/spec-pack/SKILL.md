@@ -1,15 +1,12 @@
 ---
 name: spec-pack
-description: 'Create a lightweight spec contract before non-trivial AI-assisted coding. Use when the user asks for a dev spec, spec pack, implementation plan before coding, acceptance criteria, or when a coding task affects behavior, UI, data, design-system primitives, automations, integrations, accessibility, privacy, or regulated workflows. Also Reverse mode: reverse-engineer a reproduction-grade spec from an existing feature or prototype — triggers on ''spec what we built'', ''spec the end-result'', ''reverse spec'', ''spec for regenerating X'', ''document this as a contract''.'
+description: 'Write a lightweight spec contract before non-trivial AI-assisted coding. It covers goal, non-goals, files in scope, observable acceptance criteria, states and edge cases, accessibility and privacy, a test plan, open questions and a builder prompt, and stops while a high-stakes unknown remains. Use when the user asks for a dev spec, spec pack, implementation plan before coding, or acceptance criteria. Reverse mode reverse-engineers a reproduction-grade spec from an existing feature or prototype ("spec what we built", "reverse spec", "spec the end-result", "spec for regenerating X", "document this as a contract") and verifies it against the code. For an interview-led spec from a rough idea or draft, use intent-spec.'
 ---
 
 # spec-pack
 
-Create a concise spec contract before implementation. This is the first gate in an AI development quality pipeline:
-
-```text
-Spec -> Build -> Automated checks -> Break -> Fix -> Verify -> Ship
-```
+Create a concise spec contract before implementation, so the builder (you, another agent,
+or a person) works from agreed, checkable criteria instead of reinterpreting the task.
 
 ## When to use
 
@@ -28,15 +25,15 @@ Skip for tiny edits such as typo fixes, one-line copy changes, or read-only code
 — their locked decisions and acceptance criteria are the sovereign intent layer
 and don't get relitigated; the improve pass adds scope, edge cases, a11y, and the
 test plan, and must never demand reproduction-level detail (verbatim copy,
-fixture tables, per-pixel styling) from the human. Route there, then the result
-re-enters this gate.
+fixture tables, per-pixel styling) from the human. Route there; its output uses the
+template below.
 
 ## Workflow
 
 1. If your setup has a persistent memory tool, recall relevant prior decisions for the topic if the work is non-trivial.
 2. Read the repo enough to identify existing patterns and likely files in scope.
 3. Draft the spec using the template below.
-4. Mark unknowns as either low-stakes assumptions or high-stakes blockers.
+4. Mark unknowns in **Assumptions & open questions** as either low-stakes assumptions or high-stakes blockers.
 5. Stop before implementation if high-stakes blockers remain.
 6. If the user approves the spec, hand it to the builder agent or build/review loop.
 
@@ -47,6 +44,12 @@ re-enters this gate.
 
 ## Goal
 <What should change and why.>
+
+## Users & context
+<Who uses this, what they are trying to do, and where it sits in the product.>
+
+## Locked decisions
+- <Decision the build must not relitigate> — because <reason>. (Omit the section if there are none.)
 
 ## Non-goals
 - <What this work should not touch.>
@@ -61,12 +64,20 @@ Likely in scope:
 Out of scope:
 - <file/module/workflow>
 
+## Rules
+- <Each behavior rule as a precise, testable statement: thresholds, order of operations, conditions.>
+
+## States & edge cases
+- Empty / loading / error / overflow / null / permission: <what each looks like or does>
+- <Unhappy paths the happy path implies but doesn't name>
+
 ## Acceptance criteria
 - [ ] <observable behavior>
 - [ ] <observable behavior>
 - [ ] <observable behavior>
 
 ## Accessibility, privacy, and compliance
+- Target: WCAG 2.2 AA, unless the contract names another standard (Section 508 = WCAG 2.0 AA, ADA Title II = WCAG 2.1 AA, EN 301 549 / European Accessibility Act).
 - Keyboard:
 - Screen reader:
 - Contrast/focus:
@@ -79,6 +90,10 @@ Out of scope:
 - Visual/browser:
 - Manual:
 - Repo health command:
+
+## Assumptions & open questions
+- Assumption (low-stakes): <default taken, so the build can proceed>
+- Blocker (high-stakes): <question that must be answered before building>
 
 ## Review rubric
 - What would make this unsafe to ship?
@@ -116,6 +131,9 @@ Reference exemplar: an audit-hardened `SPEC.md` kept beside the feature it descr
    - *Code → spec*: sweep the implementation for anything the spec omits that
      would make a blind rebuild observably diverge — copy, conditional
      rendering, edge semantics, data identity, shared-component behavior.
+
+   If subagents aren't available (for example in Claude.ai), run the two passes
+   yourself, one after the other, and say so in the header's verification stamp.
 5. **Patch all findings** into the spec; stamp the header with the verification
    date and method.
 6. **Gold standard (optional, expensive):** blind rebuild from the spec alone in
@@ -159,13 +177,6 @@ Reference exemplar: an audit-hardened `SPEC.md` kept beside the feature it descr
    claims (e.g. "9 of 11 pre-filled") must be re-derivable from the spec's own
    data tables.
 
-### Pipeline status (reverse mode)
-
-A reverse spec documents shipped work — set `spec_pack` → `done` with evidence
-`type: "report"` pointing at the spec file once the dual audit passes. It does
-not open a `build` gate unless a rebuild/port is actually planned.
-
-
 ## Stop conditions
 
 Do not proceed to implementation when:
@@ -178,7 +189,7 @@ Do not proceed to implementation when:
 
 If a stop condition is hit, ask the smallest clarifying question that unlocks the work.
 
-## Handoff rules
+## Handoff
 
 Builder prompt must say:
 
@@ -186,27 +197,11 @@ Builder prompt must say:
 Implement only the approved spec. Keep the diff small. Follow existing local patterns. Add or update tests for changed behavior. Do not refactor unrelated code.
 ```
 
-Breaker prompt must say:
+### If you run a build/review loop (optional)
 
-```text
-Review this as if you are trying to prevent a brittle codebase. Prioritize bugs, missing tests, accessibility, hidden coupling, stale docs/API assumptions, and places where the implementation merely works by accident.
-```
+If a second agent reviews the build, or you track work through gates
+(spec → build → review → verify), use these prompts and record the spec there:
 
-Verifier prompt must say:
-
-```text
-Re-run the quality gate. Verify the acceptance criteria one by one. Separate verified facts from assumptions.
-```
-
-## Pipeline status
-
-This skill owns the **`spec_pack`** gate. If you keep a pipeline status artifact (for example `.ai-pipeline/status.json` and its regenerated `.md` mirror), update it after drafting or approving a spec, following your pipeline's status contract.
-
-Gate mapping:
-
-- On starting the spec: set `spec_pack` → `in_progress`, `owner: "Product/Design Architect"`, `started_at` now.
-- Add evidence as the spec takes shape: `type: "report"` with `ref` = the spec file path (or `type: "note"` if the spec lives in chat), and `type: "note"` for any memory recall used.
-- Set `spec_pack` → `done` **only** when acceptance criteria are observable and all stop conditions are resolved. If a high-stakes blocker remains, set `spec_pack` → `blocked` and open a `blockers[]` entry.
-- Set `current_gate` to `build` and `next_action` to the builder handoff prompt once the spec is approved.
-
-If you keep a status board, update it through the board's own workflow; otherwise write the artifact directly.
+- Breaker prompt: "Review this as if you are trying to prevent a brittle codebase. Prioritize bugs, missing tests, accessibility, hidden coupling, stale docs/API assumptions, and places where the implementation merely works by accident."
+- Verifier prompt: "Re-run the quality gate. Verify the acceptance criteria one by one. Separate verified facts from assumptions."
+- Status: mark the spec step done only when the acceptance criteria are observable and every blocker is resolved; otherwise mark it blocked with the open question. A reverse-mode spec documents shipped work, so it closes the spec step without opening a build step unless a rebuild or port is planned.
