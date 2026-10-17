@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}} — sketches &amp; first-round requirements</title>
+<style>
+  :root{
+    --navy:#0a2a47;--navy2:#0c3556;--blue:#1f6fe5;--blue-ink:#1a56c4;--blue-soft:#e8f0fe;
+    --ink:#16202c;--muted:#5b6b7c;--line:#e3e8ef;--bg:#f4f6f9;--card:#fff;
+    --assess:#c2740c;--assess-bg:#fff3e0;--action:#7c3aed;--action-bg:#f1e9fe;
+    --done:#1b8a4b;--done-bg:#e6f5ec;--na:#64748b;--na-bg:#eef1f5;--reject:#d23b3b;--reject-bg:#fdeaea;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55;font-size:15px;}
+  a{color:var(--blue-ink);text-decoration:none;}a:hover{text-decoration:underline;}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:50px 0 42px;}
+  header .kicker{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#8fb4e6;font-weight:700;}
+  header h1{margin:8px 0 6px;font-size:32px;font-weight:800;letter-spacing:-.4px;}
+  header p{margin:0;max-width:820px;color:#cfdcec;font-size:16px;}
+  header .hmeta{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+  header .hmeta-line{font-size:12.5px;color:#8fa6bd;} header .hmeta-line b{color:#cfdcec;font-weight:700;}
+  header .hlegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font-size:12px;color:#8fa6bd;}
+  nav.toc{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
+  nav.toc .wrap{display:flex;gap:4px;flex-wrap:wrap;padding:10px 24px;align-items:center;}
+  nav.toc a{font-size:12.5px;font-weight:600;color:var(--muted);padding:6px 11px;border-radius:7px;}
+  nav.toc a:hover{background:var(--blue-soft);color:var(--blue-ink);text-decoration:none;}
+  section{padding:42px 0 8px;} h2{font-size:22px;font-weight:800;margin:0 0 6px;} h2 .num{color:var(--blue);margin-right:8px;}
+  .lead{color:var(--muted);max-width:860px;margin:0 0 22px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+  .p-ok{background:var(--done-bg);color:var(--done);}.p-info{background:var(--blue-soft);color:var(--blue-ink);}.p-med{background:var(--assess-bg);color:var(--assess);}.p-prop{background:var(--action-bg);color:var(--action);}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13.5px;}
+  th{background:#f7f9fc;text-align:left;padding:11px 13px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line);}
+  td{padding:11px 13px;border-bottom:1px solid #eef2f7;vertical-align:top;}tr:last-child td{border-bottom:0;}
+  .matrix td,.matrix th{text-align:center;}.matrix td:first-child,.matrix th:first-child{text-align:left;}
+  .yes{color:var(--done);font-weight:700;}.no{color:#c2c9d3;}.cond{color:var(--assess);font-weight:700;}
+  .req td:first-child{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--blue-ink);white-space:nowrap;font-weight:700;}
+  .callout{border-radius:12px;padding:16px 18px;margin:14px 0;border:1px solid;}
+  .c-warn{background:#fff8ec;border-color:#f0d9a8;}.c-info{background:var(--blue-soft);border-color:#cfe0fb;}.c-ok{background:var(--done-bg);border-color:#bfe6cd;}
+  .callout>b:first-child{display:block;margin-bottom:4px;}
+  .role{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-top:3px solid var(--blue);}
+  .role h4{margin:0 0 4px;font-size:14px;}.role p{margin:0;font-size:12.5px;color:var(--muted);}
+  .chip{display:inline-block;white-space:nowrap;font-size:12px;font-weight:600;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:#fbfdff;}
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;}
+  .diagram h3{margin:0 0 4px;font-size:15px;}.diagram .cap{color:var(--muted);font-size:13px;margin:0 0 12px;}
+  .diagram .mermaid{overflow-x:auto;text-align:center;background:#fbfdff;border:1px solid #eef2f7;border-radius:8px;padding:12px;}
+  .dg-tools{display:flex;gap:6px;justify-content:flex-end;margin:0 0 8px;}
+  .dg-btn{font:inherit;font-size:11.5px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 10px;cursor:pointer;}
+  .dg-btn:hover{color:var(--blue-ink);border-color:#cfe0fb;background:var(--blue-soft);}
+  .dg-editor{display:none;position:relative;margin:8px 0 2px;}
+  .dg-editor .dg-copy{position:absolute;top:8px;right:8px;z-index:1;display:inline-flex;align-items:center;justify-content:center;padding:5px;line-height:0;}
+  .dg-editor .dg-copy.copied{color:var(--done);border-color:#bfe6cd;background:var(--done-bg);}
+  .dg-editor textarea{width:100%;min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.45;border:1px solid var(--line);border-radius:8px;padding:10px;background:#fbfdff;color:var(--ink);}
+  .dg-toggle{display:inline-flex;margin:2px 0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .dg-seg{font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);background:#fff;border:0;border-right:1px solid var(--line);padding:6px 15px;cursor:pointer;}
+  .dg-seg:last-child{border-right:0;}.dg-seg.active{background:var(--action);color:#fff;}
+  footer{padding:34px 0 70px;color:var(--muted);font-size:12.5px;}
+  @media(max-width:820px){.grid4{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<!--
+  TEMPLATE NOTES (delete in final output):
+  - Fill {{TITLE}} and {{DATE}}. Keep only the sections the source material supports.
+  - Pills: p-ok=Decided, p-info=Assumed, p-med=Open, p-prop=Proposed.
+  - For a flow with a Proposed variant, duplicate the .dg-view block (As-is + With-X) inside .diagram and add the .dg-toggle. Otherwise omit the toggle and use one .dg-view.
+  - Diagram color-coding = lifecycle status, not role. Proposed-layer nodes: dashed, advisory.
+-->
+<header><div class="wrap">
+  <span class="kicker">Design Sketch · for Engineering review</span>
+  <h1>{{TITLE}}</h1>
+  <p>{{ONE_LINE_DESCRIPTION}}</p>
+  <div class="hmeta">
+    <span class="hmeta-line"><b>Last edited {{DATE}}</b> · Working draft — assumptions flagged, not committed requirements.</span>
+    <span class="hlegend">
+      <span class="pill p-ok">Decided</span> aligned at the sync
+      <span class="pill p-info">Assumed</span> reasonable default
+      <span class="pill p-med">Open</span> needs a decision
+      <span class="pill p-prop">Proposed</span> offered for review
+    </span>
+  </div>
+</div></header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#scope">Scope</a>
+  <a href="#roles">Roles</a>
+  <a href="#matrix">Permission matrix</a>
+  <a href="#lifecycle">Lifecycle</a>
+  <a href="#flow">Flows</a>
+  <a href="#reqs">Requirements</a>
+  <a href="#questions">Open questions</a>
+</div></nav>
+
+<div class="wrap">
+
+  <section id="scope">
+    <h2><span class="num">01</span>Scope</h2>
+    <p class="lead">{{WHAT THIS COVERS}}</p>
+    <div class="callout c-ok"><b>Decided</b>
+      <ul style="margin:6px 0 0;padding-left:18px;"><li>{{DECISION}}</li></ul>
+    </div>
+    <div class="callout c-warn"><b>The hard constraint to design around</b>{{CONSTRAINT}}</div>
+  </section>
+
+  <section id="reqs">
+    <h2><span class="num">06</span>First-round requirements</h2>
+    <h3 style="font-size:15px;margin:18px 0 8px;">{{GROUP}}</h3>
+    <table class="req"><tbody>
+      <tr><td>R-{{GROUP}}-1</td><td>{{REQUIREMENT}}</td><td><span class="pill p-ok">Decided</span></td></tr>
+      <tr><td>R-{{GROUP}}-2</td><td>{{OPEN QUESTION}}</td><td><span class="pill p-med">Open</span></td></tr>
+    </tbody></table>
+  </section>
+
+  <section id="questions">
+    <h2><span class="num">07</span>Open questions — by owner</h2>
+    <!-- Two cards: product gaps / engineering feasibility -->
+  </section>
+
+  <!-- DIAGRAM BLOCK: copy into #lifecycle / #flow sections.
+  <div class="diagram">
+    <h3>{{DIAGRAM TITLE}}</h3>
+    <p class="cap">{{CAPTION}}</p>
+    <div class="dg-toggle"><button type="button" class="dg-seg active" data-view="asis">As-is</button><button type="button" class="dg-seg" data-view="ai">With AI assist</button></div>
+    <div class="dg-view" data-view="asis"><pre class="mermaid">{{MERMAID_ASIS}}</pre></div>
+    <div class="dg-view" data-view="ai"><pre class="mermaid">{{MERMAID_AI}}</pre></div>
+  </div>
+  -->
+
+</div>
+
+<footer><div class="wrap">Working design sketch · last edited {{DATE}}. Assumptions flagged; not committed requirements.</div></footer>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad:false, securityLevel:'loose', flowchart:{ htmlLabels:true, useMaxWidth:true } });
+  document.querySelectorAll('.mermaid').forEach(el => { el.dataset.src = el.textContent.trim(); });
+  await mermaid.run();
+  addDiagramTools();
+  setupViewToggles();
+
+  function setupViewToggles(){
+    document.querySelectorAll('.diagram').forEach(dia => {
+      const toggle = dia.querySelector('.dg-toggle'); if(!toggle) return;
+      const views = dia.querySelectorAll('.dg-view'), segs = toggle.querySelectorAll('.dg-seg');
+      const show = v => { views.forEach(x=>x.style.display=(x.dataset.view===v?'':'none')); segs.forEach(s=>s.classList.toggle('active',s.dataset.view===v)); };
+      segs.forEach(s=>s.addEventListener('click',()=>show(s.dataset.view))); show('asis');
+    });
+  }
+  function addDiagramTools(){
+    const copyIcon='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    const checkIcon='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    document.querySelectorAll('.mermaid').forEach(el => {
+      if (el.dataset.toolsAdded) return; el.dataset.toolsAdded='1';
+      const original = el.dataset.src||'';
+      const bar=document.createElement('div'); bar.className='dg-tools';
+      const viewBtn=document.createElement('button'); viewBtn.type='button'; viewBtn.className='dg-btn'; viewBtn.textContent='View code'; bar.append(viewBtn);
+      const ed=document.createElement('div'); ed.className='dg-editor';
+      const copyBtn=document.createElement('button'); copyBtn.type='button'; copyBtn.className='dg-btn dg-copy'; copyBtn.innerHTML=copyIcon; copyBtn.setAttribute('aria-label','Copy code'); copyBtn.title='Copy code';
+      const ta=document.createElement('textarea'); ta.value=original; ta.readOnly=true; ta.spellcheck=false;
+      ed.append(copyBtn, ta);
+      el.parentNode.insertBefore(bar, el); el.parentNode.insertBefore(ed, el);
+      viewBtn.addEventListener('click',()=>{ const open=ed.style.display==='block'; ed.style.display=open?'none':'block'; viewBtn.textContent=open?'View code':'Hide'; });
+      copyBtn.addEventListener('click',async()=>{ try{await navigator.clipboard.writeText(ta.value);}catch{ta.select();document.execCommand('copy');} copyBtn.innerHTML=checkIcon; copyBtn.classList.add('copied'); setTimeout(()=>{copyBtn.innerHTML=copyIcon;copyBtn.classList.remove('copied');},1400); });
+    });
+  }
+</script>
+</body>
+</html>
