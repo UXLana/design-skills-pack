@@ -164,7 +164,7 @@ Do not introduce polymorphic `as`/`asChild` APIs unless the repository already u
 
 ### Disabled State
 
-- **Native interactive elements** (`<button>`, `<input>`, `<select>`, `<textarea>`): use the native `disabled` attribute. Do NOT add redundant `aria-disabled`.
+- **Native interactive elements** (`<button>`, `<input>`, `<select>`, `<textarea>`): use native `disabled` when the control is obviously unavailable and there is nothing to learn. When the user needs to know **why** it is unavailable (required fields, a permission, a prior step), use `aria-disabled="true"` + `aria-describedby` pointing at the reason instead, so it stays focusable, and guard the handler. Never set both. This follows the decision tree in design-accessibility.
 - **Custom interactive elements** (div/span with `role="button"`, etc.): set `aria-disabled={true}` and manually prevent interaction.
 
 ### Loading State
@@ -225,7 +225,7 @@ Use focus tokens scoped to the component type:
 - **Buttons:** `button.focus.color`, `button.focus.width`, `button.focus.offset`
 - **Other components:** Use `colors.brand.primary` with `2px` width and `2px` offset as defaults until component-specific focus tokens exist. These fallback values are permitted under the token exception policy and must be commented for future migration.
 
-Prefer CSS `:focus-visible` with `outline` or `box-shadow` for focus rings. Use a focus-ring overlay element only when the styling mechanism cannot express the ring otherwise (e.g., inset ring with border-radius mismatch). If using an overlay, ensure the focusable root has `position: relative` and the ring is not clipped by `overflow: hidden` on an ancestor.
+Prefer CSS `:focus-visible` with `outline` for focus rings. Windows forced-colors (high contrast) mode removes `box-shadow`, so a box-shadow ring needs a transparent outline underneath (`outline: 2px solid transparent`) to stay visible there. Use a focus-ring overlay element only when the styling mechanism cannot express the ring otherwise (e.g., inset ring with border-radius mismatch). If using an overlay, ensure the focusable root has `position: relative` and the ring is not clipped by `overflow: hidden` on an ancestor.
 
 See `references/component-rules.md` for the implementation pattern.
 

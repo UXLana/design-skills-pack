@@ -23,7 +23,7 @@ The goal is **clarity about tradeoffs**, not consensus.
 
 ## The Advisory File
 
-The advisory lives in `_design_task.md`, a scratch file for the current design-system task. If it doesn't exist, create it at the repository root containing only the Perspectives section. If you can't write files, or the user would rather not have one, show the section inline in chat instead; everything else works the same. Some workflows keep other sections in this file (a docs audit, a build checklist). Put Perspectives first as section 0 and leave the others alone. If there are none, ignore any mention of them below.
+The advisory lives in `_design_task.md` when the repo already has one: a shared task file some design-system workflows keep, with other sections such as a docs audit or a build checklist. Put Perspectives first as section 0 and leave the others alone. If the file doesn't exist, show the Perspectives section inline in chat and don't create it, because component-generator and icon-generator treat that file as a build workflow waiting on its questions. If the user wants the advisory saved, write it to a separate file (for example `perspectives-<topic>.md`). Everything else works the same, and you can ignore any mention of other sections below.
 
 ---
 

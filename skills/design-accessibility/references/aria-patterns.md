@@ -73,13 +73,13 @@ Every interactive element needs an accessible name:
   Action
 </button>
 
-// Toggle button
+// Toggle button: the label stays the same; aria-pressed carries the state
 <button
   type="button"
   aria-pressed={isPressed}
   onClick={() => setIsPressed(!isPressed)}
 >
-  {isPressed ? 'Enabled' : 'Disabled'}
+  Bold
 </button>
 
 // Icon button
@@ -399,8 +399,8 @@ These are the high-frequency patterns an auditor will hit in a real design syste
 ```
 
 - **Keyboard:** Escape closes. Clicking outside closes (Light Dismiss, 2.1.2 No Keyboard Trap — and focus must return to trigger).
-- **Do NOT trap focus** inside a non-modal popover; do trap focus in modal dialogs. The distinction is whether background content is interactive.
-- **2.4.11 Focus Not Obscured (WCAG 2.2 AA):** popover must not cover the triggering element when it opens.
+- **Do NOT trap focus** inside a non-modal popover. Modal dialogs are different: use native `<dialog>` with `showModal()`, or `inert` on the background, rather than a hand-written trap (see `keyboard.md`). The distinction is whether background content is interactive.
+- **2.4.11 Focus Not Obscured (WCAG 2.2 AA):** content the user opened, like this popover, doesn't fail 2.4.11 while it is open, as long as it can be dismissed without moving focus (Escape). Keeping the trigger visible is still good practice.
 
 ### Switch (on/off toggle, immediate effect)
 

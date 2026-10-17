@@ -126,7 +126,7 @@ Key commands:
 | Link | Announces text + "link" | ☐ | ☐ |
 | Form input | Announces label + type | ☐ | ☐ |
 | Error message | Announced via live region | ☐ | ☐ |
-| Modal | Focus trapped, title announced | ☐ | ☐ |
+| Modal | Focus moves in, background inert, title announced, focus returns on close | ☐ | ☐ |
 | Tab panel | Tab role, selected state | ☐ | ☐ |
 | Dropdown | Expanded state announced | ☐ | ☐ |
 | Table | Headers associated with cells | ☐ | ☐ |

@@ -226,35 +226,29 @@ function ReviewPage({ formData, onEdit, onSubmit }) {
 ### Undo/Reversibility
 
 ```tsx
-// Provide undo for destructive actions when possible
+// Provide undo for destructive actions when possible.
+// Hide the item at once, but commit the delete only when the user dismisses
+// the toast. No timer, so there is no time limit to meet under 2.2.1.
 function useUndoableDelete(onDelete) {
   const [deleted, setDeleted] = useState(null);
-  const [timeoutId, setTimeoutId] = useState(null);
 
-  const handleDelete = (item) => {
-    setDeleted(item);
-    const id = setTimeout(() => {
-      onDelete(item);
-      setDeleted(null);
-    }, 5000);
-    setTimeoutId(id);
-  };
-
-  const handleUndo = () => {
-    clearTimeout(timeoutId);
+  const handleDelete = (item) => setDeleted(item);
+  const handleUndo = () => setDeleted(null);
+  const handleDismiss = () => {
+    onDelete(deleted);
     setDeleted(null);
   };
 
-  return { deleted, handleDelete, handleUndo };
+  return { deleted, handleDelete, handleUndo, handleDismiss };
 }
 
-// Usage with toast. A timed undo window is a time limit under 2.2.1 —
-// keep the toast until the user dismisses it or moves on, or let them extend it.
+// Usage with toast: it stays until the user acts on it.
+// Also commit the pending delete if the user leaves the view.
 {deleted && (
   <div role="status" aria-live="polite">
-    Item deleted. 
+    Item deleted.
     <button onClick={handleUndo}>Undo</button>
-    <span className="sr-only">You have 5 seconds to undo</span>
+    <button onClick={handleDismiss}>Dismiss</button>
   </div>
 )}
 ```
