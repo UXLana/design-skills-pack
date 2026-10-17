@@ -26,16 +26,16 @@ and any brand.
 | | `token-audit` | Finds hard-coded colors, spacing, type, radii and shadows in code and maps each one to a token, or flags it for a new one. |
 | | `component-generator` | Creates production-ready React and TypeScript components on top of your existing primitives, following atomic design. |
 | | `icon-generator` | Generates outline and filled SVG icons with React wrappers, token-driven sizing and built-in accessibility. |
-| | `design-system-storyteller` | Writes realistic usage examples and copy for component docs. No lorem ipsum. |
-| | `design-system-ui` | A focused visual and UX polish pass on a design-system docs site: hierarchy, spacing, states, responsive behavior and motion. |
 | **3. Prototype & QA** | `flow-capture` | Maps every screen in a requirements doc into a color-coded flow, phased Crawl / Walk / Run, showing what's built and what's missing. |
 | | `ui-edge-case-audit` | Finds the empty, loading, error and boundary states a prototype forgot, then builds them. |
 | | `responsive-audit` | Catches fixed widths, rigid flex layouts, missing breakpoints and cropped images before they ship. |
 | | `visual-qa` | Checks UI changes with real browser screenshots and interaction checks on desktop and mobile. |
+| | `portable-prototype` | Turns a Vite prototype into one self-contained HTML file that anyone can open by double-clicking, so you can email a clickable prototype with no server or hosting. |
 | **4. Accessibility** | `design-accessibility` | Audits and fixes components, tokens and screens against WCAG 2.2 AA. Compliance mode maps findings to the standard your contract names (Section 508, ADA Title II, or EN 301 549 for the European Accessibility Act), and report mode writes a formal conformance report. Every finding cites its source, so a team preference is never passed off as a WCAG failure. |
 | **5. Hand off** | `intent-spec` | Interviews you one question at a time to capture a feature's intent, then adds the scope, edge cases, states, accessibility and test plan to make it build-ready. Your decisions stay yours. |
 | | `spec-pack` | Writes a short spec contract before AI-assisted coding starts, or reverse-engineers one from a feature that already exists. |
 | | `flow-diagram-render` | Renders Mermaid diagrams to PNG or SVG for the places live Mermaid doesn't run: Confluence, Slack, slides, PDFs and email. |
+| | `meeting-actions-to-tasks` | Turns meeting notes or a call transcript into proposed tasks for Jira, Linear, GitHub Issues, Asana or Notion, and creates nothing until you confirm the list. |
 | **6. Show the impact** | `case-study-capture` | Interviews you for the problem, decisions, your influence and the outcomes, then shapes an evidence-based case study. |
 | | `content-writer` | Drafts LinkedIn posts and blog articles for UX and product leadership audiences, from hook to closing line. |
 
@@ -54,7 +54,7 @@ shows up from the first token onward.
 | --- | --- |
 | **Claude Code** | Built for it. Every skill in the pack is used there. |
 | **Codex** | Same format. Tested so far: `case-study-capture`. The others should load too, but a few lean on Claude Code tools (web search, subagents, the built-in browser), so expect to point them at Codex's equivalents. |
-| **Claude.ai** (bonus) | Good for the skills that don't touch code: `design-brief-generator`, `design-lead-thought-partner`, `requirements-to-decision-doc`, `brand-tokens-translator`, `intent-spec`, `case-study-capture` and `content-writer`. |
+| **Claude.ai** (bonus) | Good for the skills that don't touch code: `design-brief-generator`, `design-lead-thought-partner`, `requirements-to-decision-doc`, `brand-tokens-translator`, `intent-spec`, `meeting-actions-to-tasks`, `case-study-capture` and `content-writer`. |
 
 ## Install in Claude Code
 
@@ -140,7 +140,8 @@ Repeat for each skill you want. Anthropic's current steps are in
 - **Some skills expect a stack.** `component-generator`, `token-audit`, `responsive-audit` and
   `design-accessibility` assume a React and TypeScript codebase with design tokens. `visual-qa` needs a
   browser tool (Claude's built-in browser or Playwright). `flow-diagram-render` runs Mermaid CLI through
-  `npx`, and `theme-generator` ships a small contrast script, so both need Node.js.
+  `npx`, and `theme-generator` ships a small contrast script, so both need Node.js. `portable-prototype`
+  works on Vite prototypes only and adds the `vite-plugin-singlefile` package.
 - **They adapt to your system.** Wherever a skill mentions "your design system," it looks for your tokens,
   components and conventions in the project you're working in. Nothing here is tied to a brand.
 - **Memory is optional.** A few skills can recall past results and save new ones if your setup has a

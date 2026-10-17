@@ -1,6 +1,6 @@
 ---
 name: design-accessibility
-description: Audit and fix accessibility in React design-system components, design tokens, themes and prototype screens against WCAG 2.2 AA, and write conformance reports for Section 508 (WCAG 2.0 AA), ADA Title II (WCAG 2.1 AA) and EN 301 549 / the European Accessibility Act. Use whenever someone asks "is this accessible?", wants an a11y or WCAG audit, a contrast check on tokens or a theme, a keyboard or screen-reader review, focus, target-size or ARIA-pattern fixes, or a VPAT / ACR / compliance report, even if they only say "a11y" or name a component. Three modes — standard (WCAG 2.2 AA findings with code fixes), compliance (adds the legal standard the contract names), report (formal ACR-style write-up plus JSON findings). Not for visual polish (design-system-ui), breakpoint layout checks (responsive-audit), screenshot verification (visual-qa), hardcoded-value drift (token-audit) or generating new theme palettes (theme-generator).
+description: Audit and fix accessibility in React design-system components, design tokens, themes and prototype screens against WCAG 2.2 AA, and write conformance reports for Section 508 (WCAG 2.0 AA), ADA Title II (WCAG 2.1 AA) and EN 301 549 / the European Accessibility Act. Use whenever someone asks "is this accessible?", wants an a11y or WCAG audit, a contrast check on tokens or a theme, a keyboard or screen-reader review, focus, target-size or ARIA-pattern fixes, or a VPAT / ACR / compliance report, even if they only say "a11y" or name a component. Three modes — standard (WCAG 2.2 AA findings with code fixes), compliance (adds the legal standard the contract names), report (formal ACR-style write-up plus JSON findings). Not for visual polish, breakpoint layout checks (responsive-audit), screenshot verification (visual-qa), hardcoded-value drift (token-audit) or generating new theme palettes (theme-generator).
 ---
 
 # Design Accessibility
@@ -441,7 +441,7 @@ If you run a multi-skill design-system workflow, this skill is one node in it. I
 ### Downstream consumers (who uses this skill's output)
 
 - **Your QA gate** (if you run one) reads the JSON findings block. Any `severity: "critical"` or `severity: "serious"` with a source label of `[WCAG 2.x AA]`, `[Section 508]`, `[ADA Title II]` or `[EN 301 549]` auto-escalates to a BLOCK verdict.
-- **`design-system-storyteller`** reads findings to surface accessibility notes in component documentation examples.
+- **Component docs** (if you keep them) can surface these findings as accessibility notes beside usage examples.
 - **A compliance dashboard** (if you keep one) ingests the JSON and maps findings to tickets via the `jira.*` fields.
 - **ACR / VPAT generation** uses the `conformance` rollup per criterion.
 
