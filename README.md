@@ -1,13 +1,14 @@
 # Design Skills Pack
 
-21 Claude skills for product designers and design leaders, covering the whole job: framing the problem,
-building on a design system, prototyping and QA, accessibility, handing off to engineering, and showing
-what the work changed.
+21 skills for Claude Code and Codex, written for product designers and design leaders. They cover the
+whole job: framing the problem, building on a design system, prototyping and QA, accessibility, handing
+off to engineering, and showing what the work changed.
 
-A skill is a folder of instructions Claude loads when your request matches it. You don't have to
-remember commands. Say "audit this page for accessibility" or "turn these meeting notes into a design
-brief" and the matching skill takes over, with a method, a checklist, and an output format a senior
-designer would recognize.
+A skill is a folder of instructions your AI agent loads when your request matches it. Claude Code and
+Codex read the same `SKILL.md` format, so one folder works in both. You don't have to remember commands.
+Say "audit this page for accessibility" or "turn these meeting notes into a design brief" and the
+matching skill takes over, with a method, a checklist, and an output format a senior designer would
+recognize.
 
 These are the skills I use in my own practice, cleaned up so they work for any team, any design system,
 and any brand.
@@ -46,6 +47,14 @@ ARIA patterns, motion, typography and cognitive load. Several other skills (`the
 `icon-generator`, `intent-spec`, `spec-pack`) build accessibility checks into their own steps, so it
 shows up from the first token onward.
 
+## Where they run
+
+| Tool | Status |
+| --- | --- |
+| **Claude Code** | Built for it. Every skill in the pack is used there. |
+| **Codex** | Same format. Tested so far: `case-study-capture`. The others should load too, but a few lean on Claude Code tools (web search, subagents, the built-in browser), so expect to point them at Codex's equivalents. |
+| **Claude.ai** (bonus) | Good for the skills that don't touch code: `design-brief-generator`, `design-lead-thought-partner`, `requirements-to-decision-doc`, `brand-tokens-translator`, `intent-spec`, `case-study-capture` and `content-writer`. |
+
 ## Install in Claude Code
 
 Claude Code loads personal skills from `~/.claude/skills/`. Each skill is a folder with a `SKILL.md` inside.
@@ -76,9 +85,33 @@ Claude Code loads personal skills from `~/.claude/skills/`. Each skill is a fold
 To share skills with a team through a repository, put them in that project's `.claude/skills/` folder
 instead. Everyone who opens the project in Claude Code gets them.
 
-## Install in Claude.ai (web and desktop)
+## Install in Codex
 
-Claude.ai takes skills one at a time, as ZIP files. Skills need code execution turned on.
+Codex loads personal skills from `~/.agents/skills/`. Older Codex releases used `~/.codex/skills/`; if
+your version doesn't list the skills, copy them there instead.
+
+1. Download the pack (skip this if you already cloned it for Claude Code):
+
+   ```bash
+   git clone https://github.com/UXLana/design-skills-pack.git
+   ```
+
+2. Copy every skill into your Codex skills folder:
+
+   ```bash
+   mkdir -p ~/.agents/skills && cp -R design-skills-pack/skills/* ~/.agents/skills/
+   ```
+
+3. Use them. Codex picks up new skills on its own; restart it if one doesn't appear. Run `/skills` to
+   see what's loaded, type `$` to call one by name (for example `$case-study-capture`), or just describe
+   the task.
+
+To share skills with a team, put them in the repository's `.agents/skills/` folder.
+
+## Bonus: install in Claude.ai (web and desktop)
+
+Best for the non-coding skills listed under [Where they run](#where-they-run). Claude.ai takes skills one
+at a time, as ZIP files, and needs code execution turned on.
 
 1. Turn on code execution. On Free, Pro and Max plans, go to **Settings > Capabilities** and turn on
    **Code execution and file creation**. On Team and Enterprise plans an owner enables it, along with
@@ -101,7 +134,7 @@ Repeat for each skill you want. Anthropic's current steps are in
 
 ## Before you install
 
-- **Read a skill before you install it.** A skill is a set of instructions Claude follows. Every one in
+- **Read a skill before you install it.** A skill is a set of instructions your agent follows. Every one in
   this pack is plain Markdown, so you can see exactly what it does.
 - **Some skills expect a stack.** `component-generator`, `token-audit`, `responsive-audit` and
   `design-accessibility` assume a React and TypeScript codebase with design tokens. `visual-qa` needs a
